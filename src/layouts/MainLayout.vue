@@ -1,107 +1,157 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="leftDrawerOpen = !leftDrawerOpen"
-        />
+  <q-layout view="hHh LpR fff">
 
+    <!-- ไทเทิลบาร์ -->
+    <q-header elevated class="bg-brown-8 text-white">
+      <q-toolbar>
+        <!-- เปิดปิดเมนู -->
+        <q-btn
+          class="q-pa-sm" color="brown-2" dense rounded
+          @click="left = !left">
+          <img src="~assets/system-images/logo-genie.png"
+            width="20px" />
+        </q-btn>
+
+        <!-- ชื่อระบบ -->
         <q-toolbar-title>
-          Quasar App
+        <span style="font-size: 18px;">{{ $t('systemLabel.projectName') }}</span>
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <!-- เปลี่ยนภาษา -->
+        <q-btn-dropdown stretch flat :label="mySelectedLocale">
+          <q-list>
+            <q-item
+              v-for="n in langOptions" :key="n.value"
+              clickable v-close-popup @click="onItemClick(n.value)"
+              v-model="mySelectedLocale">
+              <q-item-section>
+                <q-item-label>{{ n.label }}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
+
+        <!-- ปุ่มเข้าออกระบบ  -->
+        <q-btn
+          v-if="!loggedIn"
+          to="/auth"
+          icon-right="account_circle"
+          :label="$t('mainLayout.login')"
+          flat
+        />
+
+        <q-btn
+          v-else
+          @click="logoutUser"
+          icon-right="account_circle"
+          :label="$t('mainLayout.logout')"
+          flat
+        />
       </q-toolbar>
     </q-header>
 
+    <!-- เมนูนำทาง -->
     <q-drawer
-      v-model="leftDrawerOpen"
+      v-model="left"
+      :breakpoint="767"
+      :width="250"
       show-if-above
       bordered
-      content-class="bg-grey-1"
+      content-class="bg-brown-5"
     >
-      <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Essential Links
+      <q-list dark>
+        <q-item-label v-if="this.email" header>
+          {{ this.email }}
         </q-item-label>
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-separator color="brown-4"/>
+        <q-item
+          v-for="nav in navs"
+          :key="nav.label"
+          :to="nav.to"
+          class="text-grey-4"
+          exact
+          clickable
+        >
+          <q-item-section
+            avatar
+          >
+            <q-icon :name="nav.icon" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>{{ nav.label }}</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
     <q-page-container>
       <router-view />
     </q-page-container>
+
   </q-layout>
 </template>
 
 <script>
-import EssentialLink from 'components/EssentialLink.vue'
-
-const linksData = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-]
+import { mapState, mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'MainLayout',
-  components: { EssentialLink },
+
   data () {
     return {
-      leftDrawerOpen: false,
-      essentialLinks: linksData
+      left: false,
+      lang: this.$i18n.locale,
+      langOptions: [
+        { value: 'en-us', label: 'English' },
+        { value: 'th', label: 'ไทย' }
+      ],
+      navs: [
+        {
+          label: 'Todo',
+          icon: 'list',
+          to: '/'
+        },
+        {
+          label: 'Settings',
+          icon: 'settings',
+          to: '/settings'
+        }
+      ]
+    }
+  },
+  computed: {
+    ...mapGetters('settings', ['settings']),
+    ...mapState('auth', ['loggedIn', 'email', 'userEmailVerified']),
+    mySelectedLocale: {
+      get () {
+        return this.settings.mySelectedLocale
+      },
+      set (value) {
+        this.setMySelectedLocale(value)
+      }
+    }
+  },
+  methods: {
+    ...mapActions('settings', ['setMySelectedLocale', 'getSettings']),
+    ...mapActions('auth', ['logoutUser']),
+    onItemClick (i) {
+      this.mySelectedLocale = i
+    }
+  },
+  mounted () {
+    this.getSettings()
+  },
+  watch: {
+    mySelectedLocale (mySelectedLocale) {
+      this.$i18n.locale = mySelectedLocale
     }
   }
 }
 </script>
+
+<style>
+body {
+  font-family: thsarabunnew;
+  font-weight: 900;
+}
+</style>
