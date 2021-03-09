@@ -50,13 +50,18 @@ export default {
     register: 'Register'
   },
 
+  // ---------
   // components
+  // ---------
   // loginRegister
   loginRegister: {
-    Email: 'Email',
-    Password: 'Password',
+    email: 'Email',
+    password: 'Password',
     login: 'Login',
-    register: 'Register'
+    logout: 'Logout',
+    register: 'Register',
+    resendEmail: 'Resend Email',
+    verifyAccount: '<p class="text-h6">Please verify your email address to complete account activation.</p> <p class="q-py-sm text-body1">You should receive an email message from TCRP. Click the unique link provided in that email to finish verifying your email address. The web page which then launches will confirm your success.</p>'
   },
   // mainNav
   mainNav: {

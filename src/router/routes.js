@@ -1,4 +1,3 @@
-
 const routes = [
   {
     path: '/',
@@ -14,7 +13,18 @@ const routes = [
       },
       {
         path: '/auth',
+        name: 'auth',
         component: () => import('pages/PageAuth.vue')
+      },
+      {
+        path: '/verify-account',
+        name: 'verifyAccount',
+        component: () => import('pages/VerifyAcc.vue')
+      },
+      {
+        path: '/project',
+        name: 'project',
+        component: () => import('pages/Project.vue')
       }
     ]
   },

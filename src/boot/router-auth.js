@@ -1,12 +1,11 @@
 import { LocalStorage } from 'quasar'
 
-export default ({ router }) => {
+export default async ({ router, store }) => {
   router.beforeEach((to, from, next) => {
-    let loggedIn = LocalStorage.getItem('loggedIn')
+    const loggedIn = LocalStorage.getItem('loggedIn')
     if (!loggedIn && to.path !== '/auth') {
       next('/auth')
-    }
-    else {
+    } else {
       next()
     }
   })

@@ -1,14 +1,13 @@
 <template>
   <q-page padding>
-    <q-card class="auth-tabs">
-      <div
-        class="q-pa-lg"
-        style="text-align: center">
-        <img src="~assets/system-images/logo.png">
-      </div>
+    <!-- เข้าระบบ หรือ ลงทะเบียน -->
+    <q-card v-if="!loggedIn"
+      class="card-dialog">
+      <!-- โลโก้ -->
+      <logo />
+      <!-- แท็บเลือกดำเนินการ -->
       <q-tabs
-        v-model="tab"
-        dense
+        v-model="tab" dense
         class="bg-grey-3 text-grey-7"
         active-color="primary"
         indicator-color="primary"
@@ -31,27 +30,63 @@
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
+    <!-- แจ้งสถานะการเข้าสู่ระบบ -->
+    <q-card v-else
+      class="card-dialog">
+      <!-- โลโก้ -->
+      <logo />
+
+      <q-separator />
+
+      <div v-if="userEmailVerified"
+        class="q-pa-lg text-justify">
+        {{ $t('pageAuth.login') }}
+        {{ $t('loginRegister.verifyAccount') }}
+      </div>
+      <div v-else
+        class="q-pa-lg text-justify"
+        v-html="$t('loginRegister.verifyAccount')">
+      </div>
+
+      <q-separator />
+
+      <q-card-actions align="center">
+        <q-btn flat
+          :label="$t('loginRegister.resendEmail')"
+          @click="resendEmail"/>
+        <q-btn flat icon="exit" :label="$t('loginRegister.logout')" />
+      </q-card-actions>
+    </q-card>
   </q-page>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 import LoginRegister from 'src/components/Auth/LoginRegister'
+import Logo from 'src/components/Auth/Logo'
 
 export default {
   name: 'PageAuth',
+  components: {
+    LoginRegister,
+    Logo
+  },
   data () {
     return {
       tab: 'login'
     }
   },
-  components: {
-    LoginRegister
+  computed: {
+    ...mapState('auth', ['loggedIn', 'userEmailVerified'])
+  },
+  methods: {
+    ...mapActions('auth', ['resendEmail'])
   }
 }
 </script>
 
-<style>
-  .auth-tabs {
+<style scoped>
+  .card-dialog {
     max-width: 500px;
     margin: 0 auto;
   }

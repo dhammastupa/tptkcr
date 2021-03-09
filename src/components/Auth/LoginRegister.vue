@@ -7,7 +7,7 @@
         ref="email"
         lazy-rules
         class="col"
-        :label="$t('loginRegister.Email')"
+        :label="$t('loginRegister.email')"
         outlined
         stack-label
       />
@@ -20,7 +20,7 @@
         lazy-rules
         type="password"
         class="col"
-        :label="$t('loginRegister.Password')"
+        :label="$t('loginRegister.password')"
         outlined
         stack-label
       />

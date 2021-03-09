@@ -22,6 +22,7 @@ module.exports = function (/* ctx */) {
       'i18n',
       'axios',
       'firebase',
+      'router-auth',
       'vue-lodash'
     ],
 

@@ -74,7 +74,7 @@ const actions = {
   },
   logoutUser () {
     firebaseAuth.signOut()
-    this.$router.push('/').catch(() => {})
+    this.$router.push('/auth').catch(() => {})
   },
   handleAuthStateChange ({ commit, dispatch }) {
     firebaseAuth.onAuthStateChanged(user => {
@@ -86,8 +86,10 @@ const actions = {
           userEmailVerified: user.emailVerified
         }
         commit('setLoggedIn', payload)
-        LocalStorage.set('loggedIn', true)
-        this.$router.push('/').catch(() => {})
+        for (const property in payload) {
+          LocalStorage.set(property, payload[property])
+        }
+        // this.$router.push('/').catch(() => {})
       } else {
         const payload = {
           loggedIn: false,
@@ -96,9 +98,16 @@ const actions = {
         }
         commit('setLoggedIn', payload)
         LocalStorage.set('loggedIn', false)
+        for (const property in payload) {
+          LocalStorage.set(property, payload[property])
+        }
         this.$router.replace('/auth').catch(() => {})
       }
     })
+  },
+  resendEmail ({ dispatch }) {
+    firebaseAuth.currentUser.sendEmailVerification()
+    dispatch('logoutUser')
   }
 }
 
