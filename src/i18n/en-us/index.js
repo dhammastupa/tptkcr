@@ -57,5 +57,10 @@ export default {
     Password: 'Password',
     login: 'Login',
     register: 'Register'
+  },
+  // mainNav
+  mainNav: {
+    home: 'Home',
+    project: 'Project'
   }
 }

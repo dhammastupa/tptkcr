@@ -59,5 +59,10 @@ export default {
     Password: 'รหัสผ่าน',
     login: 'เข้าระบบ',
     register: 'ลงทะเบียน'
+  },
+  // mainNav
+  mainNav: {
+    home: 'หน้าแรก',
+    project: 'โครงการ'
   }
 }

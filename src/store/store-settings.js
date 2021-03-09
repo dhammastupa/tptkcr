@@ -2,7 +2,7 @@ import { LocalStorage } from 'quasar'
 
 const state = {
   defaultSettings: {
-    mySelectedLocale: 'English'
+    mySelectedLocale: 'en-us'
   },
   settings: {
     mySelectedLocale: ''

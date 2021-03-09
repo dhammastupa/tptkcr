@@ -1,10 +1,15 @@
 <template>
   <q-page padding>
     <q-card class="auth-tabs">
+      <div
+        class="q-pa-lg"
+        style="text-align: center">
+        <img src="~assets/system-images/logo.png">
+      </div>
       <q-tabs
         v-model="tab"
         dense
-        class="text-grey"
+        class="bg-grey-3 text-grey-7"
         active-color="primary"
         indicator-color="primary"
         align="justify"
@@ -21,7 +26,7 @@
           <login-register :tab="tab" />
         </q-tab-panel>
 
-        <q-tab-panel name="register">
+        <q-tab-panel name="register" class="bg-grey-1">
           <login-register :tab="tab" />
         </q-tab-panel>
       </q-tab-panels>

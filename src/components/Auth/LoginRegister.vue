@@ -1,8 +1,6 @@
 <template>
   <form @submit.prevent="submitForm">
     <div class="row q-mb-md">
-    </div>
-    <div class="row q-mb-md">
       <q-input
         v-model="formData.email"
         :rules="[ val => isValidEmailAddress(val) || 'Please enter a valid email address.']"

@@ -3,50 +3,24 @@
 
     <!-- ไทเทิลบาร์ -->
     <q-header elevated class="bg-brown-8 text-white">
+      <!-- ทูลบาร์ -->
       <q-toolbar>
         <!-- เปิดปิดเมนู -->
-        <q-btn
-          class="q-pa-sm" color="brown-2" dense rounded
-          @click="left = !left">
-          <img src="~assets/system-images/logo-genie.png"
-            width="20px" />
-        </q-btn>
-
+        <menu-btn
+          :left="left"
+          @left="left=!left"/>
         <!-- ชื่อระบบ -->
-        <q-toolbar-title>
-        <span style="font-size: 18px;">{{ $t('systemLabel.projectName') }}</span>
-        </q-toolbar-title>
-
+        <app-title />
         <!-- เปลี่ยนภาษา -->
-        <q-btn-dropdown stretch flat :label="mySelectedLocale">
-          <q-list>
-            <q-item
-              v-for="n in langOptions" :key="n.value"
-              clickable v-close-popup @click="onItemClick(n.value)"
-              v-model="mySelectedLocale">
-              <q-item-section>
-                <q-item-label>{{ n.label }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown>
-
+        <locale-switch
+          :localeOnHeader="localeOnHeader"
+          :langOptions="langOptions"
+          :mySelectedLocale="mySelectedLocale"
+          @onItemClick="onItemClick" />
         <!-- ปุ่มเข้าออกระบบ  -->
-        <q-btn
-          v-if="!loggedIn"
-          to="/auth"
-          icon-right="account_circle"
-          :label="$t('mainLayout.login')"
-          flat
-        />
-
-        <q-btn
-          v-else
-          @click="logoutUser"
-          icon-right="account_circle"
-          :label="$t('mainLayout.logout')"
-          flat
-        />
+        <logged-in-out
+          :loggedIn="loggedIn"
+          @logoutUser="logoutUser"/>
       </q-toolbar>
     </q-header>
 
@@ -59,30 +33,7 @@
       bordered
       content-class="bg-brown-5"
     >
-      <q-list dark>
-        <q-item-label v-if="this.email" header>
-          {{ this.email }}
-        </q-item-label>
-        <q-separator color="brown-4"/>
-        <q-item
-          v-for="nav in navs"
-          :key="nav.label"
-          :to="nav.to"
-          class="text-grey-4"
-          exact
-          clickable
-        >
-          <q-item-section
-            avatar
-          >
-            <q-icon :name="nav.icon" />
-          </q-item-section>
-
-          <q-item-section>
-            <q-item-label>{{ nav.label }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <main-nav :email="email" />
     </q-drawer>
 
     <q-page-container>
@@ -94,9 +45,13 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import MainNav from 'src/components/MainLayout/Navs/MainNav'
+import MenuBtn from 'src/components/MainLayout/Header/MenuBtn'
+import AppTitle from 'src/components/MainLayout/Header/AppTitle'
+import LocaleSwitch from 'src/components/MainLayout/Header/LocaleSwitch'
+import LoggedInOut from 'src/components/MainLayout/Header/LoggedInOut'
 
 export default {
-
   data () {
     return {
       left: false,
@@ -104,20 +59,15 @@ export default {
       langOptions: [
         { value: 'en-us', label: 'English' },
         { value: 'th', label: 'ไทย' }
-      ],
-      navs: [
-        {
-          label: 'Todo',
-          icon: 'list',
-          to: '/'
-        },
-        {
-          label: 'Settings',
-          icon: 'settings',
-          to: '/settings'
-        }
       ]
     }
+  },
+  components: {
+    MainNav,
+    MenuBtn,
+    AppTitle,
+    LocaleSwitch,
+    LoggedInOut
   },
   computed: {
     ...mapGetters('settings', ['settings']),
@@ -129,13 +79,21 @@ export default {
       set (value) {
         this.setMySelectedLocale(value)
       }
+    },
+    localeOnHeader () {
+      let result = 'English'
+      const checkResult = this._.find(this.langOptions, { value: this.mySelectedLocale })
+      if (!this._.isEmpty(checkResult)) {
+        result = checkResult.label
+      }
+      return result
     }
   },
   methods: {
     ...mapActions('settings', ['setMySelectedLocale', 'getSettings']),
     ...mapActions('auth', ['logoutUser']),
-    onItemClick (i) {
-      this.mySelectedLocale = i
+    onItemClick (value) {
+      this.mySelectedLocale = value
     }
   },
   mounted () {
