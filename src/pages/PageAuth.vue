@@ -16,16 +16,22 @@
       >
         <q-tab name="login" :label="$t('pageAuth.login')" />
         <q-tab name="register" :label="$t('pageAuth.register')" />
+        <q-tab name="resetPassword" :label="$t('pageAuth.resetPassword')" />
       </q-tabs>
 
       <q-separator />
 
       <q-tab-panels v-model="tab" animated>
+        <!-- ล็อกอิน -->
         <q-tab-panel name="login">
           <login-register :tab="tab" />
         </q-tab-panel>
-
+        <!-- ลงทะเบียน -->
         <q-tab-panel name="register" class="bg-grey-1">
+          <login-register :tab="tab" />
+        </q-tab-panel>
+        <!-- ลืมรหัสผ่าน -->
+        <q-tab-panel name="resetPassword">
           <login-register :tab="tab" />
         </q-tab-panel>
       </q-tab-panels>
@@ -39,9 +45,8 @@
       <q-separator />
 
       <div v-if="userEmailVerified"
-        class="q-pa-lg text-justify">
-        {{ $t('pageAuth.login') }}
-        {{ $t('loginRegister.verifyAccount') }}
+        class="q-pa-lg text-center text-h5"
+        v-html="$t('loginRegister.wordOfBuddha')">
       </div>
       <div v-else
         class="q-pa-lg text-justify"
@@ -50,11 +55,15 @@
 
       <q-separator />
 
-      <q-card-actions align="center">
-        <q-btn flat
+      <q-card-actions
+        v-if="! userEmailVerified"
+        align="center">
+        <q-btn flat icon="email"
           :label="$t('loginRegister.resendEmail')"
           @click="resendEmail"/>
-        <q-btn flat icon="exit" :label="$t('loginRegister.logout')" />
+        <q-btn flat icon="logout"
+          :label="$t('loginRegister.logout')"
+          @click="logoutUser"/>
       </q-card-actions>
     </q-card>
   </q-page>
@@ -80,7 +89,7 @@ export default {
     ...mapState('auth', ['loggedIn', 'userEmailVerified'])
   },
   methods: {
-    ...mapActions('auth', ['resendEmail'])
+    ...mapActions('auth', ['resendEmail', 'logoutUser'])
   }
 }
 </script>

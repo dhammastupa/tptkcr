@@ -43,11 +43,6 @@ export default {
           label: this.$t('mainNav.project'),
           icon: 'history_edu',
           to: '/project'
-        },
-        {
-          label: this.$t('mainNav.verifyAcc'),
-          icon: 'history_edu',
-          to: '/verify-account'
         }
       ]
       return result

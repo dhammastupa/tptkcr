@@ -14,6 +14,7 @@
     </div>
     <div class="row q-mb-md">
       <q-input
+        v-if="tab!='resetPassword'"
         v-model="formData.password"
         :rules="[ val => val.length >= 6 || 'Please enter at least 6 characters.']"
         ref="password"
@@ -55,19 +56,26 @@ export default {
     }
   },
   methods: {
-    ...mapActions('auth', ['registerUser', 'loginUser']),
+    ...mapActions('auth', ['registerUser', 'loginUser', 'resetPassword']),
     isValidEmailAddress (email) {
       const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       return re.test(String(email).toLowerCase())
     },
     submitForm () {
-      this.$refs.email.validate()
-      this.$refs.password.validate()
-      if (!this.$refs.email.hasError && !this.$refs.password.hasError) {
-        if (this.tab === 'login') {
-          this.loginUser(this.formData)
-        } else {
-          this.registerUser(this.formData)
+      if (this.tab !== 'resetPassword') {
+        this.$refs.email.validate()
+        this.$refs.password.validate()
+        if (!this.$refs.email.hasError && !this.$refs.password.hasError) {
+          if (this.tab === 'login') {
+            this.loginUser(this.formData)
+          } else {
+            this.registerUser(this.formData)
+          }
+        }
+      } else {
+        this.$refs.email.validate()
+        if (!this.$refs.email.hasError) {
+          this.resetPassword(this.formData)
         }
       }
     }

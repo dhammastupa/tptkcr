@@ -72,9 +72,22 @@ const actions = {
         console.log('error: ', error)
       })
   },
+  // ล็อกเอาท์ผู้ใช้งาน
   logoutUser () {
     firebaseAuth.signOut()
     this.$router.push('/auth').catch(() => {})
+  },
+  // เปลี่ยนรหัสผ่าน
+  resetPassword ({ context }, payload) {
+    firebaseAuth.sendPasswordResetEmail(payload.email)
+      .then(() => {
+        // แสดงข้อความให้เปิดอีเมลเพื่อทำการยืนยัน
+        showMessage('info', 'storeAuth.sendPasswordResetEmail')
+      })
+      .catch(error => {
+        showMessage('error', 'systemMessage.error')
+        console.log('error: ', error)
+      })
   },
   handleAuthStateChange ({ commit, dispatch }) {
     firebaseAuth.onAuthStateChanged(user => {

@@ -1,3 +1,3 @@
 <template>
-  <div>Project</div>
+  <q-page padding>Project</q-page>
 </template>

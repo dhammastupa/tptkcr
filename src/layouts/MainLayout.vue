@@ -108,8 +108,4 @@ export default {
 </script>
 
 <style>
-body {
-  font-family: thsarabunnew;
-  font-weight: 900;
-}
 </style>
