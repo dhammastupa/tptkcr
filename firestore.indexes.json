@@ -1,4 +1,23 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "tipitaka",
+      "queryScope": "COLLECTION",   
+      "fields": [
+        {
+          "fieldPath": "tipitakaEdition",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "volumeNumber",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "pageNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

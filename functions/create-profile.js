@@ -1,12 +1,16 @@
-const { db } = require('./admin')
+const { admin } = require('./admin')
 
 const createProfile = (userRecord, context) => {
   const { uid, email } = userRecord
 
-  return db
-    .collection('users')
+  return admin.firestore()
+    .collection('user')
     .doc(uid)
-    .set({ email })
+    .set({
+      uid,
+      email,
+      creationDate: admin.firestore.FieldValue.serverTimestamp()
+    })
     .catch(console.error)
 }
 

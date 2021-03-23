@@ -1,9 +1,40 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2021, 4, 3);
+    match /user/{id} {
+    	allow get, update: if isAuthenticated() && isOwner()
+    	allow list, write: if isAuthenticated() && isAdmin()
+    }
+    match /group/{id} {
+    	allow read
+      allow write: if isAuthenticated() && isAdmin()
+    }
+    match /permission/{id} {
+    	allow read
+      allow write: if isAuthenticated() && isAdmin()
+    }
+    match /tipitakaEdition/{id} {
+    	allow read
+      allow write: if isAuthenticated()
+    }
+    match /tipitaka/{id} {
+      allow read, write: if isAuthenticated()
+    }
+    match /wordList/{id} {
+      allow read, write: if isAuthenticated()
     }
   }
+}
+
+function isAuthenticated() {
+	return request.auth != null
+}
+
+function isAdmin() {
+	return request.auth.uid == 'IK5tMsjYZeVKpkd2kat5lHL6S1n2'
+}
+
+function isOwner() {
+	return request.auth.uid == resource.data.uid
 }

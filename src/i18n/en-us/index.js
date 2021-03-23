@@ -3,24 +3,40 @@
 
 export default {
   // ---------
-  // general
-  // ---------
-  failed: 'Action failed',
-  success: 'Action was successful',
-  info: 'Infomation',
-  error: 'Error',
-
-  // ---------
   // system
   // ---------
+  // label
   systemLabel: {
     projectName: 'Tipiṭaka Common Reference Platform',
-    switchLang: 'เปลี่ยนภาษา'
+    switchLang: 'เปลี่ยนภาษา',
+    submit: 'Submit',
+    close: 'Close',
+    verified: 'Verified',
+    createdOn: 'Created On',
+    updatedOn: 'Updated On',
+    createdBy: 'Created By',
+    updatedBy: 'Updated By',
+    create: 'Create',
+    update: 'Update',
+    checkToDelete: 'Check to delete',
+    requiredField: 'This field is required.',
+    userList: 'User List',
+    permissionList: 'Permission List',
+    search: 'Search',
+    backHome: 'Back Home',
+    page404: 'Page Not Found',
+    page403: 'Access Denied',
+    checkPermissions: 'Checking Permissions',
+    notValid: 'Input Is Not Valid'
   },
+  // message
   systemMessage: {
-    error: 'An error occurred. Please contact your system administrator'
+    infoTitle: '<span class="text-blue">Info</span>',
+    errorTitle: '<span class="text-red">Error</span>',
+    success: 'Success',
+    error: 'Error, Please contact Admin',
+    deleted: 'File deleted successfully'
   },
-
   // ---------
   // store
   // ---------
@@ -32,7 +48,6 @@ export default {
     userNotFound: 'There is no user record corresponding to this identifier. The user may have been deleted.',
     sendPasswordResetEmail: 'A password reset link was sent. Click the link in the email to create a new password.'
   },
-
   // ---------
   // layouts
   // ---------
@@ -41,7 +56,6 @@ export default {
     logout: 'Logout',
     navigation: 'Navigation'
   },
-
   // ---------
   // pages
   // ---------
@@ -51,7 +65,69 @@ export default {
     register: 'Register',
     resetPassword: 'Reset Password'
   },
-
+  // profile
+  profile: {
+    updateProfile: 'Profile',
+    firstName: 'First Name',
+    lastName: 'Last Name'
+  },
+  // accessControl
+  accessControl: {
+    uid: 'uid',
+    email: 'Email',
+    user: 'User List',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    creationDate: 'Registration Date',
+    group: 'Group List',
+    role: 'Role',
+    description: 'Description',
+    permission: 'Permission'
+  },
+  // operation
+  operation: {
+    tipitakaEdition: 'Tipiṭaka Edition',
+    digitization: 'Tipiṭaka Digitization & Database',
+    pageNumber: 'Page Number',
+    volume: 'Volume',
+    number: 'Number',
+    name: 'Name',
+    totalPages: 'Total Pages',
+    selectVolume: 'Select Volume',
+    volumesSet: 'Volumes Set',
+    pages: 'Pages',
+    imageReference: 'Image Reference',
+    volumeNumber: 'Volume Number',
+    text: 'Text',
+    image: 'Image',
+    uploadImage: 'Upload Image',
+    firstLine: 'First Line'
+  },
+  // configuration
+  configuration: {
+    tipitakaEdition: 'Tipitaka Edition',
+    code: 'Code',
+    name: 'Name',
+    description: 'Description',
+    yearOfPublication: 'Year Of Publication',
+    language: 'Language',
+    script: 'Script',
+    volumes: 'Volumes',
+    publisher: 'Publisher',
+    country: 'Country',
+    buddhistEra: 'ie. 2500',
+    pali: 'Pāḷi',
+    burmese: 'Burmese',
+    devanagari: 'Devanagari',
+    khmer: 'khmer',
+    lanna: 'Lanna',
+    laos: 'Laos',
+    roman: 'Roman',
+    sinhala: 'Sinhala',
+    thai: 'Thai',
+    sriLanka: 'Sri Lanka',
+    myanmar: 'Myanmar'
+  },
   // ---------
   // components
   // ---------
@@ -63,6 +139,7 @@ export default {
     logout: 'Logout',
     register: 'Register',
     resetPassword: 'Reset Password',
+    loginSuccessful: 'Login Successful',
     resendEmail: 'Resend Email',
     verifyAccount: '<p class="text-h6">Please verify your email address to complete account activation.</p> <p class="q-py-sm text-body1">You should receive an email message from TCRP. Click the unique link provided in that email to finish verifying your email address. The web page which then launches will confirm your success.</p>',
     wordOfBuddha: '<p class="text-subtitle1">YO VO DHAMMO CA VINAYO CA DESITO PAÑÑATTO<br>SO VO MAMACCAYENA SATTHĀ</p><p class="q-py-sm text-body1">Dhamma and Vinaya <br>will be your Teacher after I am gone..</p>'
@@ -70,6 +147,16 @@ export default {
   // mainNav
   mainNav: {
     home: 'Home',
-    project: 'Project'
+    project: 'Project',
+    myProfile: 'My Profile',
+    settings: 'Settings',
+    accessControl: 'Access Control',
+    user: 'User',
+    group: 'Group',
+    permission: 'Permission',
+    membership: 'Membership',
+    configuration: 'Configuration',
+    tipitakaEdition: 'Tipitaka Edition',
+    tipitaka: 'Tipitaka'
   }
 }

@@ -5,6 +5,7 @@ export function showMessage (type, message) {
   Loading.hide()
   Dialog.create({
     title: i18n.t(type),
-    message: i18n.t(message)
+    message: i18n.t(message),
+    html: true
   })
 }

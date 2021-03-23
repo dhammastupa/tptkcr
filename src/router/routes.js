@@ -1,39 +1,79 @@
+import { requiresLogin } from 'src/functions/function-requires-login'
+import { requiresPermission } from 'src/functions/function-requires-permission'
+
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    // 1 ไม่บังคับว่าต้องล็อกอิน
-    // 2 ในกรณีที่ล็อกอินแล้ว หากผู้ใช้ยังไม่ยืนยันตัวตน จะแจ้งให้ทราบ
-    //   โดยจะมี 2 ปุ่มให้เลือกคือ
-    //   ปุ่มส่งอีเมลอีกครั้ง พร้อมล็อกเอาท์ และ ปุ่ม ล็อกเอาท์
     children: [
+      // non-restricted pages / profile
       {
         path: '',
-        component: () => import('pages/Index.vue')
+        component: () => import('src/pages/Home/Index.vue')
       },
       {
         path: '/auth',
         name: 'auth',
-        component: () => import('pages/PageAuth.vue')
-      },
-      {
-        path: '/verify-account',
-        name: 'verifyAccount',
-        component: () => import('pages/VerifyAcc.vue')
+        component: () => import('src/pages/Home/PageAuth.vue')
       },
       {
         path: '/project',
         name: 'project',
-        component: () => import('pages/Project.vue')
+        component: () => import('pages/Home/Project.vue')
+      },
+      {
+        path: '/my-account/profile',
+        name: 'profile',
+        component: () => import('pages/Profile/UpdateProfile.vue'),
+        beforeEnter: (to, from, next) => requiresLogin(to, next)
+      },
+      // restricted pages
+      // operation
+      {
+        path: '/tipitaka/:id',
+        name: 'tipitaka',
+        component: () => import('src/pages/Operation/Tipitaka.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['tipitaka'], to, next)
+      },
+      // setting
+      // access control
+      {
+        path: '/setting/access-control/user',
+        name: 'user',
+        component: () => import('src/pages/Setting/AccessControl/User.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['accessControl'], to, next)
+      },
+      {
+        path: '/setting/access-control/group',
+        name: 'group',
+        component: () => import('src/pages/Setting/AccessControl/Group.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['accessControl'], to, next)
+      },
+      {
+        path: '/setting/access-control/permission',
+        name: 'permission',
+        component: () => import('src/pages/Setting/AccessControl/Permission.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['accessControl'], to, next)
+      },
+      // configuration
+      {
+        path: '/setting/configuration/tipitaka-edition',
+        name: 'bookSet',
+        component: () => import('src/pages/Setting/Configuration/TipitakaEdition.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['configuration'], to, next)
       }
     ]
   },
 
+  {
+    path: '/Error403',
+    component: () => import('src/pages/Home/Error403.vue')
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '*',
-    component: () => import('pages/Error404.vue')
+    component: () => import('src/pages/Home/Error404.vue')
   }
 ]
 

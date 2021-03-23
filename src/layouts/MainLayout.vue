@@ -1,14 +1,14 @@
 <template>
-  <q-layout view="hHh LpR fff">
+  <q-layout view="hHh LpR lFf">
 
     <!-- ไทเทิลบาร์ -->
-    <q-header elevated class="bg-brown-8 text-white">
+    <q-header elevated class="secondary text-white">
       <!-- ทูลบาร์ -->
       <q-toolbar>
         <!-- เปิดปิดเมนู -->
         <menu-btn
-          :left="left"
-          @left="left=!left"/>
+          :mySideMenu="mySideMenu"
+          @onSideMenuClick="onSideMenuClick" />
         <!-- ชื่อระบบ -->
         <app-title />
         <!-- เปลี่ยนภาษา -->
@@ -16,7 +16,7 @@
           :localeOnHeader="localeOnHeader"
           :langOptions="langOptions"
           :mySelectedLocale="mySelectedLocale"
-          @onItemClick="onItemClick" />
+          @onLocaleChange="onLocaleChange" />
         <!-- ปุ่มเข้าออกระบบ  -->
         <logged-in-out
           :loggedIn="loggedIn"
@@ -25,16 +25,8 @@
     </q-header>
 
     <!-- เมนูนำทาง -->
-    <q-drawer
-      v-model="left"
-      :breakpoint="767"
-      :width="250"
-      show-if-above
-      bordered
-      content-class="bg-brown-5"
-    >
-      <main-nav :email="email" />
-    </q-drawer>
+    <main-nav
+      :mySelectedLocale="mySelectedLocale" />
 
     <q-page-container>
       <router-view />
@@ -44,7 +36,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import MainNav from 'src/components/MainLayout/Navs/MainNav'
 import MenuBtn from 'src/components/MainLayout/Header/MenuBtn'
 import AppTitle from 'src/components/MainLayout/Header/AppTitle'
@@ -54,7 +46,6 @@ import LoggedInOut from 'src/components/MainLayout/Header/LoggedInOut'
 export default {
   data () {
     return {
-      left: false,
       lang: this.$i18n.locale,
       langOptions: [
         { value: 'en-us', label: 'English' },
@@ -72,6 +63,15 @@ export default {
   computed: {
     ...mapGetters('settings', ['settings']),
     ...mapState('auth', ['loggedIn', 'email', 'userEmailVerified']),
+    ...mapState('navs', ['sideMenu']),
+    mySideMenu: {
+      get () {
+        return this.sideMenu
+      },
+      set (value) {
+        this.setSideMenu(value)
+      }
+    },
     mySelectedLocale: {
       get () {
         return this.settings.mySelectedLocale
@@ -90,10 +90,14 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('navs', ['setSideMenu']),
     ...mapActions('settings', ['setMySelectedLocale', 'getSettings']),
     ...mapActions('auth', ['logoutUser']),
-    onItemClick (value) {
+    onLocaleChange (value) {
       this.mySelectedLocale = value
+    },
+    onSideMenuClick (value) {
+      this.mySideMenu = !this.mySideMenu
     }
   },
   mounted () {
@@ -106,6 +110,3 @@ export default {
   }
 }
 </script>
-
-<style>
-</style>

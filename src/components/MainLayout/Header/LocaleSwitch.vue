@@ -4,7 +4,7 @@
       <q-item
         v-for="n in langOptions" :key="n.value"
         clickable v-close-popup
-        @click="$emit('onItemClick', (n.value))"
+        @click="$emit('onLocaleChange', (n.value))"
         v-model="mySelectedLocale">
         <q-item-section>
           <q-item-label>{{ n.label }}</q-item-label>

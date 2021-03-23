@@ -1,7 +1,7 @@
 <template>
   <q-btn
-    class="q-pa-sm" color="brown-4" dense rounded
-    @click="$emit('left', left)"
+    class="q-pa-sm" color="white" dense rounded
+    @click="$emit('onSideMenuClick', mySideMenu)"
   >
     <img src="~assets/system-images/logo-genie.png"
       width="20px" />
@@ -10,6 +10,6 @@
 
 <script>
 export default {
-  props: ['left']
+  props: ['mySideMenu']
 }
 </script>

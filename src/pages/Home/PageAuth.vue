@@ -2,7 +2,7 @@
   <q-page padding>
     <!-- เข้าระบบ หรือ ลงทะเบียน -->
     <q-card v-if="!loggedIn"
-      class="card-dialog">
+      class="card-dialog-500">
       <!-- โลโก้ -->
       <logo />
       <!-- แท็บเลือกดำเนินการ -->
@@ -38,7 +38,7 @@
     </q-card>
     <!-- แจ้งสถานะการเข้าสู่ระบบ -->
     <q-card v-else
-      class="card-dialog">
+      class="card-dialog-500" >
       <!-- โลโก้ -->
       <logo />
 
@@ -56,7 +56,12 @@
       <q-separator />
 
       <q-card-actions
-        v-if="! userEmailVerified"
+        v-if="userEmailVerified"
+        align="center">
+        {{ $t('loginRegister.loginSuccessful') }}
+      </q-card-actions>
+      <q-card-actions
+        v-else
         align="center">
         <q-btn flat icon="email"
           :label="$t('loginRegister.resendEmail')"
@@ -93,10 +98,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .card-dialog {
-    max-width: 500px;
-    margin: 0 auto;
-  }
-</style>

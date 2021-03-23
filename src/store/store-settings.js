@@ -6,7 +6,8 @@ const state = {
   },
   settings: {
     mySelectedLocale: ''
-  }
+  },
+  configuration: {}
 }
 
 const mutations = {
