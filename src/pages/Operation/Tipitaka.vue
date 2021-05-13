@@ -28,6 +28,7 @@
           v-model="pageRange"
           :min="1"
           :max="totalPagesInSelectedVolume"
+          :step="10"
           label-always
           drag-only-range
         />
@@ -71,6 +72,35 @@
       transition-hide="slide-right"
     >
       <q-card>
+        <!-- draggable ruler -->
+        <div id="draggable" v-draggable="draggableValue">
+          <div :ref="handleId">
+            <!-- ปรับระหว่างบรรทัด -->
+            <div class="q-gutter">
+              <div class="row q-col-gutter-sm">
+                <div class="col">
+                  <q-slider
+                    v-model="paddingTop"
+                    :min="0"
+                    :max="600"
+                    label
+                    :label-value="$t('operation.paddingTop')"
+                  />
+                </div>
+                <div class="col">
+                  <q-slider
+                    v-model="lineHeight"
+                    :min="20"
+                    :max="40"
+                    :step="0.5"
+                    label
+                    :label-value="$t('operation.lineSpacing')"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- header -->
         <q-banner inline-actions
           :class="{ 'text-white': true, 'bg-primary': action=='update', 'bg-secondary': action=='create' }">
@@ -148,12 +178,16 @@
                 <q-splitter v-model="splitterModel">
                   <!-- image -->
                   <template v-slot:before>
+                    <div class="col q-pa-sm">{{$t('operation.image')}}</div>
                     <q-banner inline-actions class="bg-grey-3">
-                      {{$t('operation.image')}}
+                      <div class="q-gutter">
+                        <q-btn type="a" :href="imagePathReference" target="_blank" flat round icon="launch"/>
+                      </div>
                       <template v-slot:action>
                         <div class="q-gutter">
-                          <q-btn type="a" :href="imagePathReference" target="_blank" flat round icon="launch"/>
-                          <q-btn flat round icon="delete" @click="onDeleteImage"/>
+                          <!-- ลบภาพ -->
+                          <q-btn v-if="hasPermission('tipitaka-deleteAction')"
+                            flat round icon="delete" @click="onDeleteImage"/>
                         </div>
                       </template>
                     </q-banner>
@@ -164,25 +198,43 @@
                   </template>
                   <!-- text -->
                   <template v-slot:after>
+                    <div class="col q-pa-sm">{{$t('operation.text')}}</div>
                     <q-banner inline-actions class="bg-grey-3">
-                      <div class="row">
-                        <div class="col q-pt-sm">{{$t('operation.text')}}</div>
-                        <div class="col">
-                          <q-slider v-model="tipitaka.paddingTop" :min="0" :max="600" />
-                        </div>
-                      </div>
                       <template v-slot:action>
                         <div class="q-gutter">
-                          <!-- lineHeight -->
-                          <q-btn flat round icon="vertical_distribute" @click="increaseLineHeight"/>
-                          <q-btn flat round icon="menu" @click="decreaseLineHeight"/>
-                          <!-- removeExtraSpace -->
-                          <q-btn flat round icon="margin" @click="removeExtraSpace"/>
-                          <!-- deleteRecord -->
-                          <q-btn v-if="action=='update'"
-                            flat round icon="delete" color="red" @click="onDeleteRecord"/>
-                          <!-- save -->
-                          <q-btn flat round icon="save" @click="onSubmit"/>
+                          <!-- ลบเคาะที่เกิน -->
+                          <q-btn flat round icon="margin" @click="removeExtraSpace">
+                            <q-tooltip>
+                              {{ $t('operation.removeExtraSpace') }}
+                            </q-tooltip>
+                          </q-btn>
+                          <!-- พิสูจน์อักษร -->
+                          <q-toggle
+                            v-if="hasPermission('tipitaka-proofread')"
+                            v-model="tipitaka.proofread"
+                            checked-icon="check"
+                            color="red"
+                            unchecked-icon="clear"
+                            @input="onCreateWordlistBtnClick()"
+                          >
+                            <q-tooltip>
+                              {{ $t('operation.proofread') }}
+                            </q-tooltip>
+                          </q-toggle>
+                          <!-- ลบรายการ -->
+                          <q-btn v-if="action=='update' && hasPermission('tipitaka-deleteAction')"
+                            flat round icon="delete" color="red" @click="onDeleteRecord"
+                          >
+                            <q-tooltip>
+                              {{ $t('systemLabel.deleteRecord') }}
+                            </q-tooltip>
+                          </q-btn>
+                          <!-- บันทึกรายการ -->
+                          <q-btn flat round icon="save" @click="onSubmit">
+                            <q-tooltip>
+                              {{ $t('systemLabel.saveRecord') }}
+                            </q-tooltip>
+                          </q-btn>
                         </div>
                       </template>
                     </q-banner>
@@ -190,11 +242,10 @@
                       <codemirror ref="myCm" id='cmx'
                         v-model="tipitaka.text"
                         :options="cmOptions"
-                        v-bind:style="{'padding-top': `${tipitaka.paddingTop}px`}" >
+                        v-bind:style="{'padding-top': `${paddingTop}px`}" >
                       </codemirror>
                     </div>
                   </template>
-
                 </q-splitter>
               </div>
             </div>
@@ -242,17 +293,23 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { mapGetters } from 'vuex'
+import { format } from 'quasar'
 import 'codemirror/lib/codemirror.css'
+import { mapState, mapGetters } from 'vuex'
 import { codemirror } from 'vue-codemirror'
 import { db, storage } from 'src/boot/firebase'
+import { Draggable } from 'draggable-vue-directive'
 import { showMessage } from 'src/functions/function-show-message'
 import timestamp2Datetime from 'src/mixins/filter-timestamp-datetime'
 import QFirebaseUploader from 'src/components/Operation/QFirebaseUploader'
 
+const { pad } = format
+
 export default {
   name: 'operation.digitization',
+  directives: {
+    Draggable
+  },
   mixins: [timestamp2Datetime],
   components: {
     QFirebaseUploader,
@@ -260,6 +317,11 @@ export default {
   },
   data () {
     return {
+      // draggable
+      handleId: 'handle-id',
+      draggableValue: {
+        handle: undefined
+      },
       // dialog
       dialog: false,
       splitterModel: 50,
@@ -273,13 +335,15 @@ export default {
       pageOptions: [],
       pageRange: {
         min: 1,
-        max: 10
+        max: 20
       },
+      paddingTop: 10,
+      lineHeight: 20,
       // datatable & form
       initialPagination: {
         sortBy: 'pageNumber',
         descending: false,
-        rowsPerPage: 10
+        rowsPerPage: 20
       },
       tipitakas: [],
       tipitaka: {
@@ -289,9 +353,10 @@ export default {
         pageNumber: '1',
         imageReference: '',
         text: '',
+        proofread: false,
+        note: '',
         wordBoxs: [],
-        paddingTop: 10,
-        lineHeight: 20,
+        personalSetting: [],
         createdOn: this.$Timestamp.now(),
         createdBy: this.userName,
         updatedOn: this.$Timestamp.now(),
@@ -301,13 +366,15 @@ export default {
       cmOptions: {
         lineNumbers: true,
         lineWrapping: true,
-        viewportMargin: Infinity
+        viewportMargin: Infinity,
+        readOnly: false
       },
       // other
       imagePathReference: ''
     }
   },
   computed: {
+    ...mapState('auth', ['uid', 'permission']),
     ...mapGetters('auth', ['userName']),
     columns () {
       const columns = [
@@ -325,8 +392,16 @@ export default {
           sortable: true,
           align: 'left',
           classes: 'bg-grey-2 ellipsis',
-          style: 'max-width: 300px',
+          style: 'max-width: 250px',
           headerStyle: 'max-width: 250px'
+        },
+        {
+          name: 'proofread',
+          field: 'proofread',
+          format: val => (val === true) ? '✓' : '',
+          label: this.$t('operation.proofread'),
+          sortable: false,
+          align: 'center'
         },
         {
           name: 'createdOn',
@@ -350,9 +425,9 @@ export default {
     totalPagesInSelectedVolume () {
       let result = 100
       if (this.volumeOptions.length) {
-        result = this.volumeOptions[this.selectedVolume].pages
+        result = this._.find(this.volumeOptions, ['value', this.selectedVolume])
       }
-      return result
+      return result.pages
     },
     routeParam () {
       return this.$route.params.id
@@ -387,7 +462,7 @@ export default {
           })
           // get totalVolume and volumeOptions in this Editon
           const tipitakaEditions = querySnapshot.docs.map(doc => doc.data())
-          this.tipitakaEdition = _.find(tipitakaEditions, ['code', this.routeParam])
+          this.tipitakaEdition = this._.find(tipitakaEditions, ['code', this.routeParam])
           // totalVolume
           this.totalVolume = this.tipitakaEdition.volumes
           this.volumeOptions = []
@@ -411,6 +486,8 @@ export default {
           // set parameter
           vm.dialog = true
           vm.action = 'update'
+          // adjust data
+          this.createPersonalSetting()
           // get image
           storage.ref().child(`${vm.tipitaka.imageReference}`).getDownloadURL()
             .then((url) => {
@@ -419,22 +496,43 @@ export default {
               showMessage('systemMessage.errorTitle', 'systemMessage.error')
               console.log(error)
             })
+          // cmOptions
+          this.cmOptions.readOnly = this.tipitaka.proofread
         })
+    },
+    createPersonalSetting () {
+      // ตรวจสอบว่ามีข้อมูลเดิมหรือไม่
+      if (!this.tipitaka.personalSetting) {
+        this.tipitaka.personalSetting = []
+      }
+      if (!this._.find(this.tipitaka.personalSetting, ['uid', this.uid])) {
+        // ถ้าไม่มี ให้เพิ่มข้อมูล
+        this.tipitaka.personalSetting.push({
+          uid: this.uid,
+          paddingTop: 10,
+          lineHeight: 20
+        })
+      }
+      const mySetting = this._.find(this.tipitaka.personalSetting, ['uid', this.uid])
+      this.paddingTop = mySetting.paddingTop
+      this.lineHeight = mySetting.lineHeight
     },
     onCreateBtnClick () {
       this.dialog = true
       this.action = 'create'
 
       const vm = this
-      vm.pageOptions = _.range(1, vm.totalPagesInSelectedVolume + 1)
+      vm.pageOptions = this._.range(1, vm.totalPagesInSelectedVolume + 1)
       db.collection('tipitaka')
         .where('tipitakaEdition', '==', vm.tipitakaEdition.code)
         .where('volumeNumber', '==', vm.selectedVolume)
         .get()
         .then(querySnapshot => {
+          // เอาข้อมูลของฉบับและเล่มที่เลือกมา เพื่อดูว่าทำหน้าไหนไปแล้วบ้าง
           const documents = querySnapshot.docs.map(doc => doc.data())
-          const createdPages = _.map(documents, 'pageNumber')
-          const filtered = _.filter(vm.pageOptions, function (o) { return !createdPages.includes(o) })
+          const createdPages = this._.map(documents, 'pageNumber')
+          // จากนั้นให้ทำการกรองออกให้เหลือเฉพาะที่ยังไม่มี
+          const filtered = this._.filter(vm.pageOptions, function (o) { return !createdPages.includes(o) })
           vm.pageOptions = filtered
           vm.tipitaka = {
             id: '',
@@ -444,8 +542,13 @@ export default {
             imageReference: '',
             text: '',
             wordBoxs: [],
-            paddingTop: 10,
-            lineHeight: 20,
+            personalSetting: [
+              {
+                uid: vm.uid,
+                paddingTop: 10,
+                lineHeight: 20
+              }
+            ],
             createdOn: vm.$Timestamp.now(),
             createdBy: vm.userName,
             updatedOn: vm.$Timestamp.now(),
@@ -456,6 +559,12 @@ export default {
     onSubmit () {
       const vm = this
       vm.$refs.tipitakaForm.validate().then(success => {
+        vm.tipitaka.personalSetting.forEach(item => {
+          if (item.uid === vm.uid) {
+            item.lineHeight = vm.lineHeight
+            item.paddingTop = vm.paddingTop
+          }
+        })
         if (success) {
           if (vm.action === 'create') {
             db.collection('tipitaka').add({
@@ -465,8 +574,9 @@ export default {
               imageReference: vm.tipitaka.imageReference,
               text: vm.tipitaka.text,
               wordBoxs: vm.tipitaka.wordBoxs,
-              paddingTop: vm.tipitaka.paddingTop,
-              lineHeight: vm.tipitaka.lineHeight,
+              personalSetting: vm.tipitaka.personalSetting,
+              proofread: false,
+              note: vm.tipitaka.note,
               createdOn: vm.$Timestamp.now(),
               createdBy: vm.userName,
               updatedOn: vm.$Timestamp.now(),
@@ -492,8 +602,9 @@ export default {
               imageReference: vm.tipitaka.imageReference,
               text: vm.tipitaka.text,
               wordBoxs: vm.tipitaka.wordBoxs,
-              paddingTop: vm.tipitaka.paddingTop,
-              lineHeight: vm.tipitaka.lineHeight,
+              personalSetting: vm.tipitaka.personalSetting,
+              proofread: vm.tipitaka.proofread,
+              note: vm.tipitaka.note,
               updatedOn: vm.$Timestamp.now(),
               updatedBy: vm.userName
             }).then(() => {
@@ -516,6 +627,7 @@ export default {
         persistent: true
       }).onOk(() => {
         // console.log('>>>> OK')
+        // !!! อย่าลืมกลับมาลบ wordlist ด้วย
         storage.ref().child(this.tipitaka.imageReference).delete()
         this.$firestoreRefs.tipitaka.delete()
       }).onOk(() => {
@@ -526,6 +638,7 @@ export default {
     onGetBackInfo (value) {
       this.tipitaka.imageReference = `${this.tipitaka.tipitakaEdition}/${this.tipitaka.volumeNumber}/${this.tipitaka.pageNumber}.jpg`
       this.imagePathReference = value.url
+      this.onSubmit()
     },
     onDeleteImage () {
       const vm = this
@@ -533,41 +646,110 @@ export default {
         .then(() => {
           showMessage('systemMessage.infoTitle', 'systemMessage.deleted')
           vm.tipitaka.imageReference = ''
+          vm.onSubmit()
         })
         .catch(error => {
           showMessage('systemMessage.errorTitle', 'systemMessage.error')
           console.log(error)
         })
     },
-    adjustLineHeight () {
-      if (this.tipitaka.lineHeight < 40) {
-        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.tipitaka.lineHeight + 0.5}px`
-        this.tipitaka.lineHeight += 0.5
-      } else {
-        document.querySelector('#cmx div.CodeMirror').style.lineHeight = '20px'
-        this.tipitaka.lineHeight = 20
-      }
-    },
-    increaseLineHeight () {
-      if (this.tipitaka.lineHeight < 40) {
-        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.tipitaka.lineHeight + 0.5}px`
-        this.tipitaka.lineHeight += 0.5
-      }
-    },
-    decreaseLineHeight () {
-      if (this.tipitaka.lineHeight > 20) {
-        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.tipitaka.lineHeight - 0.5}px`
-        this.tipitaka.lineHeight -= 0.5
-      }
-    },
     removeExtraSpace () {
       // this.tipitaka.text = this.tipitaka.text.replace(/\s+/g, ' ').trim()
-      const splitLines = _.split(this.tipitaka.text, '\n')
+      const splitLines = this._.split(this.tipitaka.text, '\n')
       const removeExtraSpaceArray = []
       splitLines.forEach(eachLine => {
         removeExtraSpaceArray.push(eachLine.replace(/\s+/g, ' ').trim())
       })
-      this.tipitaka.text = _.join(removeExtraSpaceArray, '\n')
+      this.tipitaka.text = this._.join(removeExtraSpaceArray, '\n')
+    },
+    assignCodeMirrorCSS () {
+      const checkExist = setInterval(() => {
+        if (document.querySelector('#cmx div.CodeMirror')) {
+          document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.lineHeight}px`
+          // document.querySelector('#cmx div.CodeMirror').focus()
+          // document.querySelector('#cmx div.CodeMirror').setCursor({ line: 1, ch: 5 })
+          clearInterval(checkExist)
+        }
+      }, 300)
+    },
+    onCreateWordlistBtnClick () {
+      this.$q.dialog({
+        title: this.$t('systemLabel.confirm'),
+        message: (this.tipitaka.proofread) ? this.$t('operation.confirmToCreateWrodlist') : this.$t('operation.confirmToRemoveWrodlist'),
+        persistent: true,
+        ok: {
+          flat: true,
+          color: 'negative',
+          label: this.$t('systemLabel.confirm')
+        },
+        cancel: {
+          flat: true,
+          color: 'secondary',
+          label: this.$t('systemLabel.cancel')
+        }
+      }).onOk(() => {
+        if (this.tipitaka.proofread) {
+          this.createWordlist()
+        } else {
+          this.removeWordlist()
+        }
+        this.onSubmit()
+      }).onOk(() => {
+        console.log('>>>> second OK catcher')
+      }).onCancel(() => {
+        this.tipitaka.proofread = !this.tipitaka.proofread
+      })
+    },
+    createWordlist () {
+      if (this.tipitaka.text) {
+        const batch = db.batch()
+        const lines = this.tipitaka.text.split('\n')
+        let lineNumber = 0
+        let wordNumber = 0
+        lines.forEach(line => {
+          lineNumber++
+          const words = line.split(' ')
+          words.forEach(word => {
+            wordNumber++
+            batch.set(
+              db.collection('wordlist').doc(), {
+                word: word,
+                lineNumber: lineNumber,
+                wordNumber: wordNumber,
+                // reference
+                tipitakaReference: db.collection('tipitaka').doc(`${this.tipitaka.id}`),
+                tipitakaRecordId: this.tipitaka.id,
+                tipitakaEdition: this.tipitaka.tipitakaEdition,
+                volumeNumber: this.tipitaka.volumeNumber,
+                pageNumber: this.tipitaka.pageNumber,
+                imageReference: this.tipitaka.imageReference,
+                wordIndex: `
+                  ${this.tipitaka.tipitakaEdition}-${pad(this.tipitaka.volumeNumber, 3)}-${pad(this.tipitaka.pageNumber, 4)}-${pad(wordNumber, 3)}`
+              }
+            )
+          })
+        })
+        batch.commit().then(() => {
+          console.log('commited')
+        })
+      }
+    },
+    removeWordlist () {
+      const batch = db.batch()
+      db.collection('wordlist')
+        .where('tipitakaRecordId', '==', this.tipitaka.id)
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach((doc) => {
+            batch.delete(db.collection('wordlist').doc(doc.id))
+          })
+          batch.commit().then(() => {
+            console.log('commited')
+          })
+        })
+    },
+    hasPermission (requirePermisssion) {
+      return this._.includes(this.permission, requirePermisssion)
     }
   },
   watch: {
@@ -575,19 +757,41 @@ export default {
       this.loadData()
     },
     'tipitaka.imageReference' () {
-      const checkExist = setInterval(() => {
-        if (document.querySelector('#cmx div.CodeMirror')) {
-          document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.tipitaka.lineHeight}px`
-          clearInterval(checkExist)
-        }
-      }, 300)
+      this.assignCodeMirrorCSS()
+    },
+    lineHeight () {
+      if (document.querySelector('#cmx div.CodeMirror')) {
+        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.lineHeight}px`
+      }
     },
     pageRange () {
+      this.datatableSource()
+    },
+    selectedVolume () {
       this.datatableSource()
     }
   },
   created () {
     this.loadData()
+  },
+  mounted () {
+    this.draggableValue.handle = this.$refs[this.handleId]
   }
 }
 </script>
+
+<style scoped>
+  #draggable {
+    z-index: 99;
+    margin: 0;
+    background: lightblue;
+    position: absolute;
+    top: 25%;
+    opacity: 0.8;
+    width: 100%;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 25%;
+    padding-right: 25%;
+  }
+</style>

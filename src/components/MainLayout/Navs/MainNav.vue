@@ -5,7 +5,7 @@
     :width="250"
     show-if-above
     bordered
-    content-class="bg-primary"
+    content-class="bg-blue-grey-1"
   >
 
     <!-- เมนูส่วนบุคคล -->
@@ -21,7 +21,7 @@
     <!-- เมนูแสดงตามสิทธิ -->
     <!-- เมนูทำงาน -->
     <nav-items
-      :navItems="tipitakaMenu"
+      :navItems="operationMenu"
     />
 
     <!-- เมนูตั้งค่าระบบ -->
@@ -29,11 +29,17 @@
       :navItems="requiresPermission(this.configuratoinNavs)"
     />
 
+    <!-- เมนูเครื่องมือ -->
+    <nav-items
+      :navItems="requiresPermission(this.utilityNavs)"
+    />
+
     <!-- เมนูกำหนดสิทธิ์ -->
     <nav-items
       :navItems="requiresPermission(this.accessControlNavs)"
     />
 
+    <!-- ท้ายเมนู -->
     <q-list bordered class="bg-white" padding>
       <q-item>
         <q-item-section>
@@ -57,17 +63,18 @@
 <script>
 import { mapState, mapMutations, mapActions } from 'vuex'
 import NavItems from 'src/components/MainLayout/Navs/NavItems'
+import requiresPermission from 'src/mixins/requires-permission'
 
 export default {
   components: { NavItems },
+  mixins: [requiresPermission],
   props: ['mySelectedLocale'],
   created () {
     this.createOperationNavs()
   },
   computed: {
-    ...mapState('auth', ['loggedIn', 'email', 'userEmailVerified', 'permission']),
     ...mapState('navs', [
-      'sideMenu', 'nonRestrictedNavs', 'profileNavs', 'operationNavs', 'accessControlNavs', 'configuratoinNavs']),
+      'sideMenu', 'nonRestrictedNavs', 'profileNavs', 'operationNavs', 'accessControlNavs', 'configuratoinNavs', 'utilityNavs']),
     mySideMenu: {
       get () {
         return this.sideMenu
@@ -76,7 +83,7 @@ export default {
         this.setSideMenu(value)
       }
     },
-    tipitakaMenu () {
+    operationMenu () {
       return this.requiresPermission(this.operationNavs)
     },
     profileMenu () {
@@ -85,39 +92,7 @@ export default {
   },
   methods: {
     ...mapMutations('navs', ['setSideMenu', 'setOperationNavs']),
-    ...mapActions('navs', ['createOperationNavs']),
-    requiresPermission (navs) {
-      const result = []
-      navs.forEach(nav => {
-        // ต้องล็อกอินไหม
-        if (nav.loggedIn) {
-          // ตรวจการล็อกอิน
-          if (this.loggedIn) {
-            // ต้องยืนยันตัวตนไหม
-            if (nav.userEmailVerified) {
-              if (this.userEmailVerified) {
-                // ต้องระบุสิทธิ์ไหม
-                if (nav.havePermission) {
-                  if (this._.includes(this.permission, nav.havePermission)) {
-                    result.push(nav)
-                  }
-                // ต้องล็อกอิน ต้นยืนยันตัวตน แต่ไม่ต้องระบุสิทธิ์
-                } else {
-                  result.push(nav)
-                }
-              }
-            // ต้องล็อกอิน แต่ไม่ต้องยืนยันตัวตน
-            } else {
-              result.push(nav)
-            }
-          }
-        // ไม่ต้องล็อกอิน
-        } else {
-          result.push(nav)
-        }
-      })
-      return result
-    }
+    ...mapActions('navs', ['createOperationNavs'])
   }
 }
 </script>

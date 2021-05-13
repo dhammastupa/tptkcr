@@ -2,9 +2,9 @@
   <q-layout view="hHh LpR lFf">
 
     <!-- ไทเทิลบาร์ -->
-    <q-header elevated class="secondary text-white">
+    <q-header elevated class="secondary text-deep-orange-10">
       <!-- ทูลบาร์ -->
-      <q-toolbar>
+      <q-toolbar class="q-pa-md bg-white">
         <!-- เปิดปิดเมนู -->
         <menu-btn
           :mySideMenu="mySideMenu"

@@ -10,21 +10,22 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.9.20",
+    "@quasar/extras": "^1.10.2",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "draggable-vue-directive": "^2.1.0",
     "firebase": "^8.3.0",
     "firebase-admin": "^9.5.0",
     "firebase-functions": "^3.13.2",
     "lodash": "^4.17.21",
-    "quasar": "^1.15.7",
+    "quasar": "^1.15.10",
     "vue-codemirror": "^4.0.6",
     "vue-i18n": "^8.0.0",
     "vue-lodash": "^2.1.2",
     "vuefire": "^2.2.5"
   },
   "devDependencies": {
-    "@quasar/app": "^2.2.3",
+    "@quasar/app": "^2.2.4",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",

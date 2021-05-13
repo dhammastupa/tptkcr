@@ -27,7 +27,12 @@ export default {
     page404: 'Page Not Found',
     page403: 'Access Denied',
     checkPermissions: 'Checking Permissions',
-    notValid: 'Input Is Not Valid'
+    notValid: 'Input Is Not Valid',
+    deleteRecord: 'Delete Record',
+    saveRecord: 'Save',
+    confirm: 'Confirm',
+    cancel: 'Cancel',
+    note: 'Note'
   },
   // message
   systemMessage: {
@@ -101,11 +106,19 @@ export default {
     text: 'Text',
     image: 'Image',
     uploadImage: 'Upload Image',
-    firstLine: 'First Line'
+    proofread: 'Proofread',
+    removeExtraSpace: 'Remove Extra Space',
+    increaseLineHeight: 'Increase Line Spacing',
+    decreaseLineHeight: 'Derease Line Spacing',
+    lineSpacing: 'Line Spacing',
+    paddingTop: '1st Line',
+    confirmToCreateWrodlist: 'Once the "word list" has been created, System will not allow to edit the original text.',
+    confirmToRemoveWrodlist: 'Delete all "word lists" created from this page.'
   },
   // configuration
   configuration: {
     tipitakaEdition: 'Tipitaka Edition',
+    sequence: 'Sequence',
     code: 'Code',
     name: 'Name',
     description: 'Description',
@@ -126,7 +139,14 @@ export default {
     sinhala: 'Sinhala',
     thai: 'Thai',
     sriLanka: 'Sri Lanka',
-    myanmar: 'Myanmar'
+    myanmar: 'Myanmar',
+    content: 'Web Content',
+    routeName: 'Route Name',
+    query: 'Query',
+    mi1: 'Tool #1',
+    mi2: 'Tool #2',
+    mi3: 'Tool #3',
+    mi4: 'Tool #4'
   },
   // ---------
   // components
@@ -146,6 +166,7 @@ export default {
   },
   // mainNav
   mainNav: {
+    profile: 'Profile',
     home: 'Home',
     project: 'Project',
     myProfile: 'My Profile',
@@ -157,6 +178,8 @@ export default {
     membership: 'Membership',
     configuration: 'Configuration',
     tipitakaEdition: 'Tipitaka Edition',
-    tipitaka: 'Tipitaka'
+    tipitaka: 'Tipitaka',
+    webContent: 'Web Content',
+    utility: 'Utility'
   }
 }

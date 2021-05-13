@@ -5,7 +5,7 @@
       <q-table
         :grid="$q.screen.xs"
         :title="$t($options.name)"
-        :data="permissions"
+        :data="contents"
         :columns="columns"
         :filter="filter"
         row-key="id"
@@ -26,12 +26,11 @@
     <!-- dialog -->
     <q-dialog
       v-model="dialog"
-      position="right"
       :maximized="true"
       transition-show="slide-left"
       transition-hide="slide-right"
     >
-      <q-card class="card-dialog-500">
+      <q-card class="">
         <q-banner inline-actions
           :class="{ 'text-white': true, 'bg-primary': action=='update', 'bg-secondary': action=='create' }">
           <q-icon v-if="action=='create'" name="add" size="sm" />
@@ -43,37 +42,32 @@
         </q-banner>
 
         <q-card-section>
-          <q-form v-if="permission"
-            ref="permissionForm"
+          <q-form v-if="content"
+            ref="contentForm"
             @submit="onSubmit"
             class="q-gutter-md"
           >
             <q-input
               filled
-              v-model="permission.permission"
-              :label="$t('accessControl.permission')"
+              v-model="content.routeName"
+              :label="$t('configuration.routeName')"
+              :readonly="this.action == 'update'"
               lazy-rules
               :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
             />
 
-            <q-input
-              filled
-              v-model="permission.description"
-              :label="$t('accessControl.description')"
-              lazy-rules
-              :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
-            />
+            <q-editor v-model="content.body" min-height="5rem" />
 
             <q-input
-              v-if="permission.createdOn"
-              :value="permission.createdOn | toDateTime"
+              v-if="content.createdOn"
+              :value="content.createdOn | toDateTime"
               :label="$t('systemLabel.createdOn')"
               readonly
             />
 
             <q-input
-              v-if="permission.updatedOn"
-              :value="permission.updatedOn | toDateTime"
+              v-if="content.updatedOn"
+              :value="content.updatedOn | toDateTime"
               :label="$t('systemLabel.updatedOn')"
               readonly
             />
@@ -102,18 +96,19 @@ import { showMessage } from 'src/functions/function-show-message'
 import timestamp2Datetime from 'src/mixins/filter-timestamp-datetime'
 
 export default {
-  name: 'accessControl.permission',
+  name: 'configuration.content',
   mixins: [timestamp2Datetime],
   data () {
     return {
+      // toolbar definitions
       dialog: false,
       action: 'add',
       deleteAction: false,
       filter: '',
-      permissions: [],
-      permission: {
-        permission: '',
-        description: '',
+      contents: [],
+      content: {
+        routeName: '',
+        body: '',
         createdOn: this.$Timestamp.now(),
         createdBy: this.userName,
         updatedOn: this.$Timestamp.now(),
@@ -122,24 +117,27 @@ export default {
     }
   },
   firestore: {
-    permissions: db.collection('permission')
+    contents: db.collection('content')
   },
   computed: {
     ...mapGetters('auth', ['userName']),
     columns () {
       const columns = [
         {
-          name: 'permission',
-          field: 'permission',
-          label: this.$t('accessControl.permission'),
+          name: 'routeName',
+          field: 'routeName',
+          label: this.$t('configuration.routeName'),
           sortable: true,
           align: 'left'
         },
         {
-          name: 'description',
-          field: 'description',
-          label: this.$t('accessControl.description'),
-          sortable: true,
+          name: 'body',
+          field: 'body',
+          format: val => this.stripHtml(val),
+          label: this.$t('configuration.content'),
+          classes: 'bg-grey-2 ellipsis',
+          style: 'max-width: 250px',
+          headerStyle: 'max-width: 250px',
           align: 'left'
         },
         {
@@ -149,14 +147,25 @@ export default {
           label: this.$t('systemLabel.createdOn'),
           sortable: true,
           align: 'left'
+        },
+        {
+          name: 'updatedOn',
+          field: 'updatedOn',
+          format: val => `${new Date(val.toDate()).toDateString()}`,
+          label: this.$t('systemLabel.updatedOn'),
+          sortable: true,
+          align: 'left'
         }
       ]
       return columns
     }
   },
   methods: {
+    stripHtml (val) {
+      return val.replace(/<\/?[^>]+(>|$)/g, '')
+    },
     onRowClick (evt, row) {
-      this.$bind('permission', db.collection('permission').doc(row.id))
+      this.$bind('content', db.collection('content').doc(row.id))
         .then(() => {
           this.dialog = true
           this.action = 'update'
@@ -167,9 +176,9 @@ export default {
       this.dialog = true
       this.action = 'create'
       this.deleteAction = false
-      this.permission = {
-        permission: '',
-        description: '',
+      this.content = {
+        routeName: '',
+        body: '',
         createdOn: this.$Timestamp.now(),
         createdBy: this.userName,
         updatedOn: this.$Timestamp.now(),
@@ -177,12 +186,12 @@ export default {
       }
     },
     onSubmit () {
-      this.$refs.permissionForm.validate().then(success => {
+      this.$refs.contentForm.validate().then(success => {
         if (success) {
           if (this.action === 'create') {
-            db.collection('permission').doc(this.permission.permission).set({
-              permission: this.permission.permission,
-              description: this.permission.description,
+            db.collection('content').doc(this.content.routeName).set({
+              routeName: this.content.routeName,
+              body: this.content.body,
               createdOn: this.$Timestamp.now(),
               createdBy: this.userName,
               updatedOn: this.$Timestamp.now(),
@@ -195,29 +204,11 @@ export default {
             })
           } else if (this.action === 'update') {
             if (this.deleteAction) {
-              // นำรายการ permission ที่กำลังจะลบ ออกจากที่บันทึไว้ใน group เสียก่อน
-              const vm = this
-              db.collection('group')
-                .where('permission', 'array-contains-any', [vm.permission.id])
-                .get()
-                .then(querySnapshot => {
-                  const batch = db.batch()
-                  querySnapshot.forEach((doc) => {
-                    const element = doc.data()
-                    vm._.remove(element.permission, function (n) {
-                      return n === vm.permission.id
-                    })
-                    batch.update(db.collection('group')
-                      .doc(doc.id), { permission: element.permission })
-                  })
-                  batch.commit().then(() => {
-                    this.$firestoreRefs.permission.delete()
-                  })
-                })
+              this.$firestoreRefs.content.delete()
             } else {
-              db.collection('permission').doc(this.permission.permission).set({
-                permission: this.permission.permission,
-                description: this.permission.description,
+              this.$firestoreRefs.content.update({
+                routeName: this.content.routeName,
+                body: this.content.body,
                 updatedOn: this.$Timestamp.now(),
                 updatedBy: this.userName
               }).then(() => {
@@ -233,6 +224,8 @@ export default {
         }
       })
     }
+  },
+  created () {
   }
 }
 </script>

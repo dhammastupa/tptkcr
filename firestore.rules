@@ -21,8 +21,11 @@ service cloud.firestore {
     match /tipitaka/{id} {
       allow read, write: if isAuthenticated()
     }
-    match /wordList/{id} {
+    match /wordlist/{id} {
       allow read, write: if isAuthenticated()
+    }
+    match /content/{id} {
+      allow read, write: if true
     }
   }
 }

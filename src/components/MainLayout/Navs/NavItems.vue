@@ -1,13 +1,12 @@
 <template>
-  <q-list bordered dark>
+  <q-list bordered>
     <span
       v-for="nav in navItems"
       :key="nav.label">
-      <q-item
-        v-if="!nav.title"
+      <q-item v-if="!nav.title"
         :to="nav.to"
-        class="text-white"
-        exact-active-class="bg-blue-9 text-white shadow-2"
+        :class="nav.class"
+        exact-active-class="bg-blue-grey-4 text-black shadow-2"
         clickable
       >
         <q-item-section v-if="nav.icon" avatar>
@@ -24,7 +23,7 @@
       </q-item>
       <q-item v-else
         style="font-size: 1.2em"
-        class="q-pt-lg text-yellow-4"
+        :class="nav.class"
       >
         <q-item-section avatar>
           <q-icon :name="nav.icon" />

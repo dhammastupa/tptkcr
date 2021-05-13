@@ -50,6 +50,14 @@
           >
             <q-input
               filled
+              v-model="tipitakaEdition.sequence"
+              :label="$t('configuration.sequence')"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
+            />
+
+            <q-input
+              filled
               :readonly="this.action == 'update'"
               v-model="tipitakaEdition.code"
               :label="$t('configuration.code')"
@@ -287,6 +295,7 @@ export default {
       ],
       tipitakaEditions: [],
       tipitakaEdition: {
+        sequence: 0,
         code: '',
         name: '',
         description: '',
@@ -435,6 +444,7 @@ export default {
         if (success) {
           if (this.action === 'create') {
             db.collection('tipitakaEdition').doc(this.tipitakaEdition.code).set({
+              sequence: this.tipitakaEdition.sequence,
               code: this.tipitakaEdition.code,
               name: this.tipitakaEdition.name,
               description: this.tipitakaEdition.description,
@@ -461,6 +471,7 @@ export default {
             } else {
               this.$firestoreRefs.tipitakaEdition.set({
               // db.collection('tipitakaEdition').doc(this.tipitakaEdition.code).set({
+                sequence: this.tipitakaEdition.sequence,
                 code: this.tipitakaEdition.code,
                 name: this.tipitakaEdition.name,
                 description: this.tipitakaEdition.description,

@@ -27,7 +27,12 @@ export default {
     page404: 'ไม่พบหน้าที่ต้องการ',
     page403: 'ไม่ได้รับอนุญาต',
     checkPermissions: 'กำลังตรวจสอบสิทธิ์',
-    notValid: 'กรอกข้อมูลไม่ถูกต้อง'
+    notValid: 'กรอกข้อมูลไม่ถูกต้อง',
+    deleteRecord: 'ลบข้อมูล',
+    saveRecord: 'บันทึกข้อมูล',
+    confirm: 'ยืนยัน',
+    cancel: 'ยกเลิก',
+    note: 'หมายเหตุ'
   },
   // message
   systemMessage: {
@@ -101,11 +106,19 @@ export default {
     text: 'เนื้อความ',
     image: 'รูปภาพ',
     uploadImage: 'อัปโหลดไฟล์ภาพ',
-    firstLine: 'บรรทัดแรก'
+    proofread: 'พิสูจน์อักษร',
+    removeExtraSpace: 'ลบช่องว่างส่วนเกิน',
+    increaseLineHeight: 'เพิ่มช่องว่างระหว่างบรรทัด',
+    decreaseLineHeight: 'ลดช่องว่างระหว่างบรรทัด',
+    lineSpacing: 'ระหว่างบรรทัด',
+    paddingTop: 'บรรทัดแรก',
+    confirmToCreateWrodlist: 'เมื่อสร้าง "รายการคำ" แล้ว ระบบจะไม่อนุญาตให้แก้ไขข้อความต้นฉบับ',
+    confirmToRemoveWrodlist: 'ลบ "รายการคำ" ที่สร้างขึ้นจากหน้านี้ทั้งหมด'
   },
   // configuration
   configuration: {
     tipitakaEdition: 'ฉบับพระไตรปิฎก',
+    sequence: 'ลำดับ',
     code: 'รหัส',
     name: 'ชื่อ',
     description: 'รายละเอียด',
@@ -126,7 +139,14 @@ export default {
     sinhala: 'สิงหล',
     thai: 'ไทย',
     sriLanka: 'ศรีลังกา',
-    myanmar: 'พม่า'
+    myanmar: 'พม่า',
+    content: 'เนื้อหาเว็บไซต์',
+    routeName: 'ชื่อเพจ',
+    query: 'คิวรี่ข้อมูล',
+    mi1: 'เครื่องมือ #1',
+    mi2: 'เครื่องมือ #2',
+    mi3: 'เครื่องมือ #3',
+    mi4: 'เครื่องมือ #4'
   },
   // ---------
   // components
@@ -146,6 +166,7 @@ export default {
   },
   // mainNav
   mainNav: {
+    profile: 'ประวัติ',
     home: 'หน้าแรก',
     project: 'โครงการ',
     myProfile: 'ประวัติผู้ใช้',
@@ -157,6 +178,8 @@ export default {
     membership: 'สมาชิก',
     configuration: 'การตั้งค่าระบบ',
     tipitakaEdition: 'ฉบับพระไตรปิฎก',
-    tipitaka: 'พระไตรปิฎก'
+    tipitaka: 'พระไตรปิฎก',
+    webContent: 'เนื้อหาเว็บไซต์',
+    utility: 'เครื่องมือ'
   }
 }

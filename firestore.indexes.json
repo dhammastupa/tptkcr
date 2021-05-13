@@ -1,8 +1,8 @@
 {
   "indexes": [
     {
-      "collectionGroup": "tipitaka",
-      "queryScope": "COLLECTION",   
+      "collectionGroup": "tipitaka",     
+      "queryScope": "COLLECTION",        
       "fields": [
         {
           "fieldPath": "tipitakaEdition",
@@ -14,6 +14,48 @@
         },
         {
           "fieldPath": "pageNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tipitaka",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "volumeNumber",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "note",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tipitaka",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "volumeNumber",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "pageNumber",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tipitaka",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "volumeNumber",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "tipitakaEdition",
           "order": "ASCENDING"
         }
       ]

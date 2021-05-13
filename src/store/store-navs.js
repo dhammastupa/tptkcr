@@ -12,20 +12,33 @@ const state = {
     {
       label: 'mainNav.home',
       icon: 'home',
-      to: '/'
+      to: '/',
+      class: 'text-black'
     },
     {
       label: 'mainNav.project',
       icon: 'history_edu',
-      to: '/project'
+      to: '/project',
+      class: 'text-black'
     }
   ],
   profileNavs: [
+    {
+      icon: 'face',
+      label: 'mainNav.profile',
+      to: '/',
+      class: 'q-pt-lg text-blue-grey',
+      title: true,
+      loggedIn: true,
+      userEmailVerified: true,
+      havePermission: ''
+    },
     {
       icon: '',
       label: email,
       caption: dateFormattedString,
       to: '/my-account/profile',
+      class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
       havePermission: ''
@@ -36,6 +49,7 @@ const state = {
       icon: 'auto_stories',
       label: 'mainNav.tipitaka',
       to: '/',
+      class: 'q-pt-lg text-blue-grey',
       title: true,
       loggedIn: true,
       userEmailVerified: true,
@@ -47,6 +61,7 @@ const state = {
       icon: 'verified_user',
       label: 'mainNav.accessControl',
       to: '/',
+      class: 'q-pt-lg text-blue-grey',
       title: true,
       loggedIn: true,
       userEmailVerified: true,
@@ -56,6 +71,7 @@ const state = {
       icon: 'people',
       label: 'mainNav.user',
       to: '/setting/access-control/user',
+      class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
       havePermission: 'accessControl'
@@ -64,6 +80,7 @@ const state = {
       icon: 'supervised_user_circle',
       label: 'mainNav.group',
       to: '/setting/access-control/group',
+      class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
       havePermission: 'accessControl'
@@ -72,6 +89,7 @@ const state = {
       icon: 'flaky',
       label: 'mainNav.permission',
       to: '/setting/access-control/permission',
+      class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
       havePermission: 'accessControl'
@@ -79,9 +97,10 @@ const state = {
   ],
   configuratoinNavs: [
     {
-      icon: 'build',
+      icon: 'settings_suggest',
       label: 'mainNav.configuration',
       to: '/',
+      class: 'q-pt-lg text-blue-grey',
       title: true,
       loggedIn: true,
       userEmailVerified: true,
@@ -91,9 +110,31 @@ const state = {
       icon: 'snippet_folder',
       label: 'mainNav.tipitakaEdition',
       to: '/setting/configuration/tipitaka-edition',
+      class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
       havePermission: 'configuration'
+    },
+    {
+      icon: 'wysiwyg',
+      label: 'mainNav.webContent',
+      to: '/setting/configuration/content',
+      class: 'text-black',
+      loggedIn: true,
+      userEmailVerified: true,
+      havePermission: 'configuration'
+    }
+  ],
+  utilityNavs: [
+    {
+      icon: 'build',
+      label: 'mainNav.utility',
+      to: '/setting/utility',
+      class: 'text-black',
+      title: false,
+      loggedIn: true,
+      userEmailVerified: true,
+      havePermission: 'utility'
     }
   ]
 }
@@ -113,15 +154,14 @@ const mutations = {
 const actions = {
   createOperationNavs ({ commit }, payload) {
     const menuItems = []
-    db.collection('tipitakaEdition').orderBy('createdOn').get()
+    db.collection('tipitakaEdition').orderBy('sequence').get()
       .then(querySnapshot => {
         querySnapshot.forEach((doc) => {
-          const element = doc.data()
           menuItems.push({
             icon: 'remove',
-            label: element.name,
-            caption: element.description,
-            to: '/tipitaka/' + element.code,
+            label: doc.data().name,
+            caption: doc.data().description,
+            to: '/tipitaka/' + doc.data().code,
             loggedIn: true,
             userEmailVerified: true,
             havePermission: 'tipitaka'

@@ -18,7 +18,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig)
 const auth = firebaseApp.auth()
 const db = firebaseApp.firestore()
 const storage = firebaseApp.storage()
-const { Timestamp, GeoPoint } = firebase.firestore
+const { Timestamp, GeoPoint, FieldValue } = firebase.firestore
 
 export default async ({ app, router, Vue, store }) => {
   // instantiate vuefire for firestore
@@ -28,6 +28,7 @@ export default async ({ app, router, Vue, store }) => {
   Vue.prototype.$firestore = firebase.firestore()
   Vue.prototype.$Timestamp = Timestamp
   Vue.prototype.$GeoPoint = GeoPoint
+  Vue.prototype.$FieldValue = FieldValue
 }
 
-export { auth, db, storage, Timestamp, GeoPoint }
+export { auth, db, storage, Timestamp, GeoPoint, FieldValue }
