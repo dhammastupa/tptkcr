@@ -246,7 +246,7 @@ export default {
     }
   },
   created () {
-    db.collection('user').get()
+    db.collection('user').orderBy('email').get()
       .then(snapshot => {
         snapshot.forEach(element => {
           this.userOption.push({

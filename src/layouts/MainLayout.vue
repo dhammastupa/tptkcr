@@ -4,7 +4,7 @@
     <!-- ไทเทิลบาร์ -->
     <q-header elevated class="secondary text-deep-orange-10">
       <!-- ทูลบาร์ -->
-      <q-toolbar class="q-pa-md bg-white">
+      <q-toolbar class="q-pa-sm bg-white">
         <!-- เปิดปิดเมนู -->
         <menu-btn
           :mySideMenu="mySideMenu"

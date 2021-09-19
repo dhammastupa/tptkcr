@@ -2,6 +2,12 @@
   <q-page padding>
     <div class="q-py-lg">
       <q-input
+        class="q-py-sm"
+        v-model.number="tipitakaEdition"
+        filled
+        style="max-width: 200px"
+      />
+      <q-input
         v-model.number="volumeNumber"
         type="number"
         filled
@@ -16,8 +22,8 @@
     </div>
 
     <div class="q-gutter-sm">
-      <q-btn disable color="red" @click="runMigration">run generate record</q-btn>
-      <q-btn disable color="red" @click="removeRecord">run remove record</q-btn>
+      <q-btn color="red" @click="runMigration">run generate record</q-btn>
+      <q-btn color="red" @click="removeRecord">run remove record</q-btn>
     </div>
   </q-page>
 </template>
@@ -29,7 +35,7 @@ import { mapState, mapGetters } from 'vuex'
 export default {
   data () {
     return {
-      tipitakaEdition: 'sya',
+      tipitakaEdition: 'mcu',
       volumeNumber: 0,
       totalPages: 0
     }
@@ -69,7 +75,7 @@ export default {
       // get total pages in selected volume/
       const vm = this
       console.log(vm.volumeNumber)
-      db.collection('tipitakaEdition').doc('sya').get()
+      db.collection('tipitakaEdition').doc(`${vm.tipitakaEdition}`).get()
         .then(snapshot => {
           const document = snapshot.data()
           vm.totalPages = vm._.filter(document.volume, ['number', `${vm.volumeNumber}`])[0].totalPages

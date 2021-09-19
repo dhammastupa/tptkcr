@@ -24,6 +24,11 @@
       :navItems="operationMenu"
     />
 
+    <!-- เมนูสารบัญ -->
+    <nav-items
+      :navItems="commonTocMenu"
+    />
+
     <!-- เมนูตั้งค่าระบบ -->
     <nav-items
       :navItems="requiresPermission(this.configuratoinNavs)"
@@ -71,10 +76,11 @@ export default {
   props: ['mySelectedLocale'],
   created () {
     this.createOperationNavs()
+    this.createCommonTocNavs()
   },
   computed: {
     ...mapState('navs', [
-      'sideMenu', 'nonRestrictedNavs', 'profileNavs', 'operationNavs', 'accessControlNavs', 'configuratoinNavs', 'utilityNavs']),
+      'sideMenu', 'nonRestrictedNavs', 'profileNavs', 'operationNavs', 'commonTocNavs', 'accessControlNavs', 'configuratoinNavs', 'utilityNavs']),
     mySideMenu: {
       get () {
         return this.sideMenu
@@ -86,13 +92,16 @@ export default {
     operationMenu () {
       return this.requiresPermission(this.operationNavs)
     },
+    commonTocMenu () {
+      return this.requiresPermission(this.commonTocNavs)
+    },
     profileMenu () {
       return this.requiresPermission(this.profileNavs)
     }
   },
   methods: {
     ...mapMutations('navs', ['setSideMenu', 'setOperationNavs']),
-    ...mapActions('navs', ['createOperationNavs'])
+    ...mapActions('navs', ['createOperationNavs', 'createCommonTocNavs'])
   }
 }
 </script>

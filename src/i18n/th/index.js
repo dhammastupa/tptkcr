@@ -11,6 +11,7 @@ export default {
     switchLang: 'Language Switcher',
     submit: 'บันทึก',
     close: 'ปิด',
+    saveAndClose: 'บันทึกและปิด',
     verified: 'ยืนยันอีเมลแล้ว',
     createdOn: 'วันที่บันทึก',
     updatedOn: 'วันที่ปรับปรุง',
@@ -32,15 +33,19 @@ export default {
     saveRecord: 'บันทึกข้อมูล',
     confirm: 'ยืนยัน',
     cancel: 'ยกเลิก',
-    note: 'หมายเหตุ'
+    note: 'หมายเหตุ',
+    filter: 'ค้นกรอง',
+    confirmToDelete: 'กรุณายืนยันที่จะลบข้อมูล'
   },
   // message
   systemMessage: {
     infoTitle: '<span class="text-blue">แจ้งเพื่อทราบ</span>',
     errorTitle: '<span class="text-red">เกิดข้อผิดพลาด</span>',
     success: 'ดำเนินการสำเร็จ',
+    updateSuccess: 'บันทึกสำเร็จ!',
     error: 'ดำเนินการไม่สำเร็จ โปรดติดต่อเจ้าหน้าที่',
-    deleted: 'ดำเนินการลบไฟล์สำเร็จ'
+    deleted: 'ดำเนินการลบไฟล์สำเร็จ',
+    noRecordFound: 'ไม่พบข้อมูล'
   },
   // ---------
   // store
@@ -113,7 +118,38 @@ export default {
     lineSpacing: 'ระหว่างบรรทัด',
     paddingTop: 'บรรทัดแรก',
     confirmToCreateWrodlist: 'เมื่อสร้าง "รายการคำ" แล้ว ระบบจะไม่อนุญาตให้แก้ไขข้อความต้นฉบับ',
-    confirmToRemoveWrodlist: 'ลบ "รายการคำ" ที่สร้างขึ้นจากหน้านี้ทั้งหมด'
+    confirmToRemoveWrodlist: 'ลบ "รายการคำ" ที่สร้างขึ้นจากหน้านี้ทั้งหมด',
+    commonToc: 'สารบัญกลาง'
+  },
+  // commonToc
+  commonToc: {
+    label: 'รายการสารบัญ',
+    upward: 'เลื่อนขึ้น',
+    downward: 'เลื่อนลง',
+    delete: 'ลบ',
+    update: 'ปรับปรุง',
+    add: 'เพิ่ม',
+    expandAll: 'ย่อ/ขยาย สารบัญ',
+    settings: 'ตั้งค่า',
+    volumes: 'เล่ม',
+    chengeParent: 'ย้ายกลุ่ม',
+    pageView: 'มุมมองหน้าหนังสือ',
+    treeView: 'มุมมองสารบัญ',
+    beginContent: 'เริ่ม',
+    endContent: 'สิ้นสุด',
+    markContent: 'กำหนดเขตเนื้อหา',
+    clearMarkContent: 'ล้างเขตเนื้อหา',
+    clearSelectedWord: 'ยกเลิกการเลือกคำ',
+    firstWord: 'คำแรก',
+    lastWord: 'คำสุดท้าย',
+    wordSeqBlock: 'ช่วงเนื้อหา',
+    save: 'บันทึก',
+    volumeNumber: 'เล่มที่',
+    pageNumber: 'หน้าที่',
+    word: 'คำศัพท์',
+    tcr: 'อ้างอิงร่วม',
+    verseNumber: 'เลขข้อ',
+    search: 'ต้นหา'
   },
   // configuration
   configuration: {
@@ -146,7 +182,12 @@ export default {
     mi1: 'เครื่องมือ #1',
     mi2: 'เครื่องมือ #2',
     mi3: 'เครื่องมือ #3',
-    mi4: 'เครื่องมือ #4'
+    mi4: 'เครื่องมือ #4',
+    mi5: 'เครื่องมือ #5',
+    mi6: 'เครื่องมือ #6',
+    mi7: 'เครื่องมือ #7',
+    mi8: 'เครื่องมือ #8',
+    tocSet: 'ชุดสารบัญ'
   },
   // ---------
   // components
@@ -179,7 +220,10 @@ export default {
     configuration: 'การตั้งค่าระบบ',
     tipitakaEdition: 'ฉบับพระไตรปิฎก',
     tipitaka: 'พระไตรปิฎก',
+    tipitakaPreservation: 'อนุรักษ์พระไตรปิฎก',
+    commonToc: 'สารบัญกลาง',
     webContent: 'เนื้อหาเว็บไซต์',
-    utility: 'เครื่องมือ'
+    utility: 'เครื่องมือ',
+    tocSet: 'ชุดสารบัญ'
   }
 }

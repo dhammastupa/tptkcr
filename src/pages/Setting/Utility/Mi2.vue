@@ -7,7 +7,7 @@
       </ol>
       <div>ได้ดำเนินการแล้วในวันที่ 27 มีนาคม 2564</div>
     </div>
-    <q-btn disable color="red" @click="runMigration">run (Disable)</q-btn>
+    <q-btn disable color="red" @click="runMigration">run</q-btn>
   </q-page>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
-  <q-page padding>
+  <q-page>
     <!-- ////// -->
     <!-- header -->
     <!-- ////// -->
-    <div class="q-pa-md">
-      <q-banner inline-actions class="bg-grey-2 text-black">
+    <div class="q-pb-md">
+      <q-banner inline-actions class="bg-blue-grey-1 text-black">
         <div class="text-h6">{{ tipitakaEdition.name }}</div>
         {{ tipitakaEdition.description }} {{ totalVolume }} {{ $t('operation.volumesSet') }}
         <template v-slot:action>
@@ -22,7 +22,7 @@
           </q-select>
         </template>
       </q-banner>
-      <q-banner inline-actions class="bg-grey-2 text-black q-px-lg">
+      <q-banner inline-actions class="bg-blue-grey-1 text-black q-px-lg">
         <q-range
           v-if="volumeOptions"
           v-model="pageRange"
@@ -38,7 +38,7 @@
     <!-- ///////// -->
     <!-- datatable -->
     <!-- ///////// -->
-    <div class="q-pa-md">
+    <div class="q-pb-md">
       <q-table
         :grid="$q.screen.xs"
         :title="$t($options.name)"
@@ -73,11 +73,11 @@
     >
       <q-card>
         <!-- draggable ruler -->
-        <div id="draggable" v-draggable="draggableValue">
+        <div id="draggable" v-if="action=='update' & showRuler==true" v-draggable="draggableValue">
           <div :ref="handleId">
             <!-- ปรับระหว่างบรรทัด -->
-            <div class="q-gutter">
-              <div class="row q-col-gutter-sm">
+            <div class="q-gutter q-pa-sm bg-white">
+              <div class="row q-col-gutter-md">
                 <div class="col">
                   <q-slider
                     v-model="paddingTop"
@@ -108,7 +108,16 @@
           <q-icon v-else name="drive_file_rename_outline" size="sm" />
           {{ $t($options.name) }}
           <template v-slot:action>
-            <q-btn dense flat icon="close" v-close-popup />
+            <div class="q-gutter-sm">
+              <!-- ก่อนหน้า -->
+              <q-btn flat :disable="previousPageStatus" round icon="arrow_back" @click="goPrevious"></q-btn>
+              <!-- ถัดไป -->
+              <q-btn flat :disable="nextPageStatus" round icon="arrow_forward" @click="goNext"></q-btn>
+              <!-- ปิด ไม่บันทึก -->
+              <q-btn dense flat icon="close" v-close-popup />
+              <!-- ปิด และบันทึก -->
+              <q-btn dense flat icon="save" v-close-popup @click="onSubmit" />
+            </div>
           </template>
         </q-banner>
 
@@ -181,7 +190,10 @@
                     <div class="col q-pa-sm">{{$t('operation.image')}}</div>
                     <q-banner inline-actions class="bg-grey-3">
                       <div class="q-gutter">
+                        <!-- เปิดลิงค์ภาพ -->
                         <q-btn type="a" :href="imagePathReference" target="_blank" flat round icon="launch"/>
+                        <!-- แสดงไม้บรรทัด -->
+                        <q-btn :color="showRuler ? 'purple' : 'black'" flat round icon="straighten" @click="showRuler=!showRuler"/>
                       </div>
                       <template v-slot:action>
                         <div class="q-gutter">
@@ -238,12 +250,15 @@
                         </div>
                       </template>
                     </q-banner>
-                    <div class="q-pa-md">
+                    <div class="q-pa-md q-gutter-sm">
                       <codemirror ref="myCm" id='cmx'
                         v-model="tipitaka.text"
                         :options="cmOptions"
+                        @ready="onCmReady"
                         v-bind:style="{'padding-top': `${paddingTop}px`}" >
                       </codemirror>
+                      <div class="q-py-md">{{ $t('systemLabel.note') }}</div>
+                      <q-editor v-model="tipitaka.note" min-height="5rem" />
                     </div>
                   </template>
                 </q-splitter>
@@ -295,22 +310,23 @@
 <script>
 import { format } from 'quasar'
 import 'codemirror/lib/codemirror.css'
-import { mapState, mapGetters } from 'vuex'
 import { codemirror } from 'vue-codemirror'
+import { mapState, mapGetters } from 'vuex'
 import { db, storage } from 'src/boot/firebase'
 import { Draggable } from 'draggable-vue-directive'
 import { showMessage } from 'src/functions/function-show-message'
 import timestamp2Datetime from 'src/mixins/filter-timestamp-datetime'
-import QFirebaseUploader from 'src/components/Operation/QFirebaseUploader'
+import QFirebaseUploader from 'src/components/Operation/Tipitaka/QFirebaseUploader'
+import savetoLogbook from 'src/mixins/saveto-logbook'
 
 const { pad } = format
 
 export default {
   name: 'operation.digitization',
+  mixins: [timestamp2Datetime, savetoLogbook],
   directives: {
     Draggable
   },
-  mixins: [timestamp2Datetime],
   components: {
     QFirebaseUploader,
     codemirror
@@ -319,6 +335,7 @@ export default {
     return {
       // draggable
       handleId: 'handle-id',
+      showRuler: false,
       draggableValue: {
         handle: undefined
       },
@@ -391,7 +408,7 @@ export default {
           label: this.$t('operation.text'),
           sortable: true,
           align: 'left',
-          classes: 'bg-grey-2 ellipsis',
+          classes: 'bg-blue-grey-1 ellipsis',
           style: 'max-width: 250px',
           headerStyle: 'max-width: 250px'
         },
@@ -434,6 +451,22 @@ export default {
     },
     codemirror () {
       return this.$refs.myCm.codemirror
+    },
+    previousPageStatus () {
+      if (this.tipitaka) {
+        if (this.tipitaka.pageNumber > 1) {
+          return false
+        }
+      }
+      return true
+    },
+    nextPageStatus () {
+      if (this.tipitaka) {
+        if (this.tipitaka.pageNumber < this.totalPagesInSelectedVolume) {
+          return false
+        }
+      }
+      return true
     }
   },
   methods: {
@@ -480,8 +513,11 @@ export default {
         })
     },
     onRowClick (evt, row) {
+      this.bindData(row.id)
+    },
+    bindData (id) {
       const vm = this
-      vm.$bind('tipitaka', db.collection('tipitaka').doc(row.id))
+      vm.$bind('tipitaka', db.collection('tipitaka').doc(id))
         .then(() => {
           // set parameter
           vm.dialog = true
@@ -498,6 +534,34 @@ export default {
             })
           // cmOptions
           this.cmOptions.readOnly = this.tipitaka.proofread
+        })
+    },
+    goPrevious () {
+      this.onSubmit()
+      db.collection('tipitaka')
+        .where('tipitakaEdition', '==', this.tipitaka.tipitakaEdition)
+        .where('volumeNumber', '==', this.tipitaka.volumeNumber)
+        .where('pageNumber', '==', this.tipitaka.pageNumber - 1)
+        .get()
+        .then(querySnapshot => {
+          if (!querySnapshot.empty) {
+            const documents = querySnapshot.docs.map(doc => doc.data())
+            this.bindData(documents[0].id)
+          }
+        })
+    },
+    goNext () {
+      this.onSubmit()
+      db.collection('tipitaka')
+        .where('tipitakaEdition', '==', this.tipitaka.tipitakaEdition)
+        .where('volumeNumber', '==', this.tipitaka.volumeNumber)
+        .where('pageNumber', '==', this.tipitaka.pageNumber + 1)
+        .get()
+        .then(querySnapshot => {
+          if (!querySnapshot.empty) {
+            const documents = querySnapshot.docs.map(doc => doc.data())
+            this.bindData(documents[0].id)
+          }
         })
     },
     createPersonalSetting () {
@@ -567,7 +631,10 @@ export default {
         })
         if (success) {
           if (vm.action === 'create') {
-            db.collection('tipitaka').add({
+            // crate new document id and set data to doc
+            const newDoc = db.collection('tipitaka').doc()
+            newDoc.set({
+              id: newDoc.id,
               tipitakaEdition: vm.tipitaka.tipitakaEdition,
               volumeNumber: vm.tipitaka.volumeNumber,
               pageNumber: vm.tipitaka.pageNumber,
@@ -581,13 +648,18 @@ export default {
               createdBy: vm.userName,
               updatedOn: vm.$Timestamp.now(),
               updatedBy: vm.userName
-            }).then((docRef) => {
-              vm.tipitaka.id = docRef.id
-              vm.action = 'update'
-              vm.$bind('tipitaka', db.collection('tipitaka').doc(docRef.id))
-              this.$firestoreRefs.tipitaka.update({
-                id: docRef.id
-              })
+            }).then(() => {
+              // update logbook
+              this.saveToLogbook('tipitaka',
+                'add',
+                newDoc.id,
+                {
+                  tipitakaEdition: vm.tipitaka.tipitakaEdition,
+                  volumeNumber: vm.tipitaka.volumeNumber,
+                  pageNumber: vm.tipitaka.pageNumber,
+                  imageReference: vm.tipitaka.imageReference,
+                  text: vm.tipitaka.text
+                })
               showMessage('systemMessage.infoTitle', 'systemMessage.success')
             }).catch(error => {
               showMessage('systemMessage.errorTitle', 'systemMessage.error')
@@ -608,7 +680,18 @@ export default {
               updatedOn: vm.$Timestamp.now(),
               updatedBy: vm.userName
             }).then(() => {
-              showMessage('systemMessage.infoTitle', 'systemMessage.success')
+              // update logbook
+              this.saveToLogbook('tipitaka',
+                'add',
+                vm.$firestoreRefs.tipitaka.id,
+                {
+                  tipitakaEdition: vm.tipitaka.tipitakaEdition,
+                  volumeNumber: vm.tipitaka.volumeNumber,
+                  pageNumber: vm.tipitaka.pageNumber,
+                  imageReference: vm.tipitaka.imageReference,
+                  text: vm.tipitaka.text
+                })
+              showMessage('systemMessage.infoTitle', 'systemMessage.updateSuccess')
             }).catch(error => {
               showMessage('systemMessage.errorTitle', 'systemMessage.error')
               console.log(error)
@@ -621,12 +704,17 @@ export default {
     },
     onDeleteRecord () {
       this.$q.dialog({
-        title: 'Confirm',
-        message: 'Would you like to turn on the wifi?',
+        title: this.$t('systemLabel.confirm'),
+        message: this.$t('systemLabel.confirmToDelete'),
         cancel: true,
         persistent: true
       }).onOk(() => {
         // console.log('>>>> OK')
+        // update logbook
+        this.saveToLogbook('tipitaka',
+          'delete',
+          this.selected,
+          {})
         // !!! อย่าลืมกลับมาลบ wordlist ด้วย
         storage.ref().child(this.tipitaka.imageReference).delete()
         this.$firestoreRefs.tipitaka.delete()
@@ -689,11 +777,22 @@ export default {
         }
       }).onOk(() => {
         if (this.tipitaka.proofread) {
+          this.saveToLogbook(
+            'tipitaka',
+            'proofread',
+            this.tipitaka.id,
+            { proofread: this.tipitaka.proofread })
           this.createWordlist()
         } else {
+          this.saveToLogbook(
+            'tipitaka',
+            'un-proofread',
+            this.tipitaka.id,
+            { proofread: this.tipitaka.proofread })
           this.removeWordlist()
         }
         this.onSubmit()
+        this.cmOptions.readOnly = this.tipitaka.proofread
       }).onOk(() => {
         console.log('>>>> second OK catcher')
       }).onCancel(() => {
@@ -711,8 +810,10 @@ export default {
           const words = line.split(' ')
           words.forEach(word => {
             wordNumber++
+            const newDoc = db.collection('wordlist').doc()
             batch.set(
-              db.collection('wordlist').doc(), {
+              db.collection('wordlist').doc(newDoc.id), {
+                id: newDoc.id,
                 word: word,
                 lineNumber: lineNumber,
                 wordNumber: wordNumber,
@@ -723,8 +824,7 @@ export default {
                 volumeNumber: this.tipitaka.volumeNumber,
                 pageNumber: this.tipitaka.pageNumber,
                 imageReference: this.tipitaka.imageReference,
-                wordIndex: `
-                  ${this.tipitaka.tipitakaEdition}-${pad(this.tipitaka.volumeNumber, 3)}-${pad(this.tipitaka.pageNumber, 4)}-${pad(wordNumber, 3)}`
+                wordIndex: `${this.tipitaka.tipitakaEdition}-${pad(this.tipitaka.volumeNumber, 3)}-${pad(this.tipitaka.pageNumber, 4)}-${pad(wordNumber, 3)}`
               }
             )
           })
@@ -750,6 +850,14 @@ export default {
     },
     hasPermission (requirePermisssion) {
       return this._.includes(this.permission, requirePermisssion)
+    },
+    adjustLineHeight () {
+      if (document.querySelector('#cmx div.CodeMirror')) {
+        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.lineHeight}px`
+      }
+    },
+    onCmReady () {
+      this.adjustLineHeight()
     }
   },
   watch: {
@@ -760,15 +868,17 @@ export default {
       this.assignCodeMirrorCSS()
     },
     lineHeight () {
-      if (document.querySelector('#cmx div.CodeMirror')) {
-        document.querySelector('#cmx div.CodeMirror').style.lineHeight = `${this.lineHeight}px`
-      }
+      this.adjustLineHeight()
     },
     pageRange () {
       this.datatableSource()
     },
     selectedVolume () {
       this.datatableSource()
+      this.pageRange = {
+        min: 1,
+        max: 20
+      }
     }
   },
   created () {
@@ -784,9 +894,9 @@ export default {
   #draggable {
     z-index: 99;
     margin: 0;
-    background: lightblue;
+    background: #c8e6c9 !important;
     position: absolute;
-    top: 25%;
+    top: 125px;
     opacity: 0.8;
     width: 100%;
     padding-top: 10px;

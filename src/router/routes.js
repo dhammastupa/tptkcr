@@ -35,14 +35,33 @@ const routes = [
         component: () => import('src/pages/Operation/Tipitaka.vue'),
         beforeEnter: (to, from, next) => requiresPermission(['tipitaka'], to, next)
       },
+      {
+        path: '/common-toc/:id',
+        name: 'common-toc',
+        component: () => import('src/pages/Operation/CommonToc.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['common-toc'], to, next)
+      },
       // setting
       // configuration
       {
         path: '/setting/configuration/tipitaka-edition',
-        name: 'bookSet',
+        name: 'tipitaka-edition',
         component: () => import('src/pages/Setting/Configuration/TipitakaEdition.vue'),
         beforeEnter: (to, from, next) => requiresPermission(['configuration'], to, next)
       },
+      {
+        path: '/setting/configuration/toc-set',
+        name: 'toc-set',
+        component: () => import('src/pages/Setting/Configuration/TocSet.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['configuration'], to, next)
+      },
+      {
+        path: '/setting/configuration/content',
+        name: 'webContent',
+        component: () => import('src/pages/Setting/Configuration/WebContent.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['configuration'], to, next)
+      },
+      // utility
       {
         path: '/setting/utility',
         name: 'utility',
@@ -80,10 +99,34 @@ const routes = [
         beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
       },
       {
-        path: '/setting/configuration/content',
-        name: 'webContent',
-        component: () => import('src/pages/Setting/Configuration/WebContent.vue'),
-        beforeEnter: (to, from, next) => requiresPermission(['configuration'], to, next)
+        path: '/setting/utility/mi5',
+        name: 'mi5',
+        component: () => import('src/pages/Setting/Utility/Mi5.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
+      },
+      {
+        path: '/setting/utility/mi6',
+        name: 'mi6',
+        component: () => import('src/pages/Setting/Utility/Mi6.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
+      },
+      {
+        path: '/setting/utility/mi7',
+        name: 'mi7',
+        component: () => import('src/pages/Setting/Utility/Mi7.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
+      },
+      {
+        path: '/setting/utility/mi8',
+        name: 'mi8',
+        component: () => import('src/pages/Setting/Utility/Mi8.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
+      },
+      {
+        path: '/setting/utility/mi9',
+        name: 'mi9',
+        component: () => import('src/pages/Setting/Utility/Mi9.vue'),
+        beforeEnter: (to, from, next) => requiresPermission(['utility'], to, next)
       },
       // access control
       {

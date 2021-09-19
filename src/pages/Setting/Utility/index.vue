@@ -62,6 +62,42 @@ export default {
           loggedIn: true,
           userEmailVerified: true,
           havePermission: 'utility'
+        },
+        {
+          icon: 'pan_tool',
+          label: 'configuration.mi5',
+          to: '/setting/utility/mi5',
+          class: 'text-grey',
+          loggedIn: true,
+          userEmailVerified: true,
+          havePermission: 'utility'
+        },
+        {
+          icon: 'pan_tool',
+          label: 'configuration.mi6',
+          to: '/setting/utility/mi6',
+          class: 'text-grey',
+          loggedIn: true,
+          userEmailVerified: true,
+          havePermission: 'utility'
+        },
+        {
+          icon: 'pan_tool',
+          label: 'configuration.mi7',
+          to: '/setting/utility/mi7',
+          class: 'text-grey',
+          loggedIn: true,
+          userEmailVerified: true,
+          havePermission: 'utility'
+        },
+        {
+          icon: 'pan_tool',
+          label: 'configuration.mi8',
+          to: '/setting/utility/mi8',
+          class: 'text-grey',
+          loggedIn: true,
+          userEmailVerified: true,
+          havePermission: 'utility'
         }
       ]
     }

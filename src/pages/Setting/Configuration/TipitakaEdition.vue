@@ -469,7 +469,7 @@ export default {
             if (this.deleteAction) {
               this.$firestoreRefs.tipitakaEdition.delete()
             } else {
-              this.$firestoreRefs.tipitakaEdition.set({
+              this.$firestoreRefs.tipitakaEdition.update({
               // db.collection('tipitakaEdition').doc(this.tipitakaEdition.code).set({
                 sequence: this.tipitakaEdition.sequence,
                 code: this.tipitakaEdition.code,

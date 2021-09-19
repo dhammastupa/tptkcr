@@ -15,8 +15,7 @@ service cloud.firestore {
       allow write: if isAuthenticated() && isAdmin()
     }
     match /tipitakaEdition/{id} {
-    	allow read
-      allow write: if isAuthenticated()
+    	allow read, write: if isAuthenticated()
     }
     match /tipitaka/{id} {
       allow read, write: if isAuthenticated()
@@ -25,7 +24,20 @@ service cloud.firestore {
       allow read, write: if isAuthenticated()
     }
     match /content/{id} {
-      allow read, write: if true
+      allow read, write: if isAuthenticated()
+    }
+    match /tocSet/{id} {
+    	allow read, write: if isAuthenticated()
+    }
+    match /commonToc/{id} {
+    	allow read, write: if isAuthenticated()
+    }
+    match /wordSequences/{id} {
+    	allow read, write: if isAuthenticated()
+    }
+    match /logbook/{id} {
+    	allow read
+      allow write: if isAuthenticated()
     }
   }
 }

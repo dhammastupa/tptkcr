@@ -5,7 +5,7 @@
       <q-table
         :grid="$q.screen.xs"
         :title="$t($options.name)"
-        :data="permissions"
+        :data="tocSets"
         :columns="columns"
         :filter="filter"
         row-key="id"
@@ -43,37 +43,65 @@
         </q-banner>
 
         <q-card-section>
-          <q-form v-if="permission"
-            ref="permissionForm"
+          <q-form v-if="tocSet"
+            ref="tocSetForm"
             @submit="onSubmit"
             class="q-gutter-md"
           >
             <q-input
               filled
-              v-model="permission.permission"
-              :label="$t('accessControl.permission')"
+              v-model="tocSet.sequence"
+              :label="$t('configuration.sequence')"
               lazy-rules
               :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
             />
 
             <q-input
               filled
-              v-model="permission.description"
-              :label="$t('accessControl.description')"
+              v-model="tocSet.name"
+              :label="$t('configuration.name')"
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
+            />
+
+            <q-editor
+              v-model="tocSet.description"
+              :placeholder="$t('configuration.description')"
+              min-height="5rem"
+            />
+
+            <q-select
+              filled
+              v-model="tocSet.language"
+              :options="languageOptions"
+              :label="$t('configuration.language')"
+              emit-value
+              map-options
+              lazy-rules
+              :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
+            />
+
+            <q-select
+              filled
+              v-model="tocSet.script"
+              :options="scriptOptions"
+              :label="$t('configuration.script')"
+              emit-value
+              map-options
               lazy-rules
               :rules="[ val => val && val.length > 0 || $t('systemLabel.requiredField')]"
             />
 
             <q-input
-              v-if="permission.createdOn"
-              :value="permission.createdOn | toDateTime"
+              v-if="tocSet.createdOn"
+              :value="tocSet.createdOn | toDateTime"
               :label="$t('systemLabel.createdOn')"
               readonly
             />
 
             <q-input
-              v-if="permission.updatedOn"
-              :value="permission.updatedOn | toDateTime"
+              v-if="tocSet.updatedOn"
+              :value="tocSet.updatedOn | toDateTime"
               :label="$t('systemLabel.updatedOn')"
               readonly
             />
@@ -97,23 +125,72 @@
 
 <script>
 import { db } from 'src/boot/firebase'
-import { mapGetters } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { showMessage } from 'src/functions/function-show-message'
 import timestamp2Datetime from 'src/mixins/filter-timestamp-datetime'
 
 export default {
-  name: 'accessControl.permission',
+  name: 'configuration.tocSet',
   mixins: [timestamp2Datetime],
   data () {
     return {
+      // grid
       dialog: false,
       action: 'add',
       deleteAction: false,
       filter: '',
-      permissions: [],
-      permission: {
-        permission: '',
+      // options
+      languageOptions: [
+        {
+          value: 'pali',
+          label: this.$t('configuration.pali')
+        },
+        {
+          value: 'thai',
+          label: this.$t('configuration.thai')
+        }
+      ],
+      scriptOptions: [
+        {
+          value: 'burmese',
+          label: this.$t('configuration.burmese')
+        },
+        {
+          value: 'devanagari',
+          label: this.$t('configuration.devanagari')
+        },
+        {
+          value: 'khmer',
+          label: this.$t('configuration.khmer')
+        },
+        {
+          value: 'lanna',
+          label: this.$t('configuration.lanna')
+        },
+        {
+          value: 'laos',
+          label: this.$t('configuration.laos')
+        },
+        {
+          value: 'roman',
+          label: this.$t('configuration.roman')
+        },
+        {
+          value: 'sinhala',
+          label: this.$t('configuration.sinhala')
+        },
+        {
+          value: 'thai',
+          label: this.$t('configuration.thai')
+        }
+      ],
+      tocSets: [],
+      tocSet: {
+        sequence: 0,
+        name: '',
         description: '',
+        language: 'pali',
+        script: '',
         createdOn: this.$Timestamp.now(),
         createdBy: this.userName,
         updatedOn: this.$Timestamp.now(),
@@ -122,31 +199,31 @@ export default {
     }
   },
   firestore: {
-    permissions: db.collection('permission')
+    tocSets: db.collection('tocSet')
   },
   computed: {
+    ...mapState('settings', ['configuration']),
     ...mapGetters('auth', ['userName']),
     columns () {
       const columns = [
         {
-          name: 'permission',
-          field: 'permission',
-          label: this.$t('accessControl.permission'),
+          name: 'name',
+          field: 'name',
+          label: this.$t('configuration.name'),
           sortable: true,
           align: 'left'
         },
         {
-          name: 'description',
-          field: 'description',
-          label: this.$t('accessControl.description'),
+          name: 'language',
+          field: 'language',
+          label: this.$t('configuration.language'),
           sortable: true,
           align: 'left'
         },
         {
-          name: 'createdOn',
-          field: 'createdOn',
-          format: val => `${new Date(val.toDate()).toDateString()}`,
-          label: this.$t('systemLabel.createdOn'),
+          name: 'script',
+          field: 'script',
+          label: this.$t('configuration.script'),
           sortable: true,
           align: 'left'
         }
@@ -156,20 +233,26 @@ export default {
   },
   methods: {
     onRowClick (evt, row) {
-      this.$bind('permission', db.collection('permission').doc(row.id))
-        .then(() => {
+      this.$bind('tocSet', db.collection('tocSet').doc(row.id))
+        .then((doc) => {
           this.dialog = true
           this.action = 'update'
           this.deleteAction = false
+          if (doc.volume) {
+            this.volume = doc.volume
+          }
         })
     },
     onCreateBtnClick () {
       this.dialog = true
       this.action = 'create'
       this.deleteAction = false
-      this.permission = {
-        permission: '',
+      // ล้างฟอร์ม
+      this.tocSet = {
+        name: '',
         description: '',
+        language: 'pali',
+        script: '',
         createdOn: this.$Timestamp.now(),
         createdBy: this.userName,
         updatedOn: this.$Timestamp.now(),
@@ -177,12 +260,15 @@ export default {
       }
     },
     onSubmit () {
-      this.$refs.permissionForm.validate().then(success => {
+      this.$refs.tocSetForm.validate().then(success => {
         if (success) {
           if (this.action === 'create') {
-            db.collection('permission').doc(this.permission.permission).set({
-              permission: this.permission.permission,
-              description: this.permission.description,
+            db.collection('tocSet').add({
+              sequence: this.tocSet.sequence,
+              name: this.tocSet.name,
+              description: this.tocSet.description,
+              language: this.tocSet.language,
+              script: this.tocSet.script,
               createdOn: this.$Timestamp.now(),
               createdBy: this.userName,
               updatedOn: this.$Timestamp.now(),
@@ -195,29 +281,14 @@ export default {
             })
           } else if (this.action === 'update') {
             if (this.deleteAction) {
-              // นำรายการ permission ที่กำลังจะลบ ออกจากที่บันทึไว้ใน group เสียก่อน
-              const vm = this
-              db.collection('group')
-                .where('permission', 'array-contains-any', [vm.permission.id])
-                .get()
-                .then(querySnapshot => {
-                  const batch = db.batch()
-                  querySnapshot.forEach((doc) => {
-                    const element = doc.data()
-                    vm._.remove(element.permission, function (n) {
-                      return n === vm.permission.id
-                    })
-                    batch.update(db.collection('group')
-                      .doc(doc.id), { permission: element.permission })
-                  })
-                  batch.commit().then(() => {
-                    this.$firestoreRefs.permission.delete()
-                  })
-                })
+              this.$firestoreRefs.tocSet.delete()
             } else {
-              db.collection('permission').doc(this.permission.permission).update({
-                permission: this.permission.permission,
-                description: this.permission.description,
+              this.$firestoreRefs.tocSet.update({
+                sequence: this.tocSet.sequence,
+                name: this.tocSet.name,
+                description: this.tocSet.description,
+                language: this.tocSet.language,
+                script: this.tocSet.script,
                 updatedOn: this.$Timestamp.now(),
                 updatedBy: this.userName
               }).then(() => {

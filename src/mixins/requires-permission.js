@@ -16,7 +16,6 @@ export default {
             if (nav.userEmailVerified) {
               if (this.userEmailVerified) {
                 // ต้องระบุสิทธิ์ไหม
-                console.log('userEmailVerified')
                 if (nav.havePermission) {
                   if (this._.includes(this.permission, nav.havePermission)) {
                     result.push(nav)

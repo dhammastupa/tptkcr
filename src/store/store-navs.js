@@ -47,13 +47,25 @@ const state = {
   operationNavs: [
     {
       icon: 'auto_stories',
-      label: 'mainNav.tipitaka',
+      label: 'mainNav.tipitakaPreservation',
       to: '/',
       class: 'q-pt-lg text-blue-grey',
       title: true,
       loggedIn: true,
       userEmailVerified: true,
       havePermission: 'tipitaka'
+    }
+  ],
+  commonTocNavs: [
+    {
+      icon: 'account_tree',
+      label: 'mainNav.commonToc',
+      to: '/',
+      class: 'q-pt-lg text-blue-grey',
+      title: true,
+      loggedIn: true,
+      userEmailVerified: true,
+      havePermission: 'common-toc'
     }
   ],
   accessControlNavs: [
@@ -107,9 +119,18 @@ const state = {
       havePermission: 'configuration'
     },
     {
-      icon: 'snippet_folder',
+      icon: 'auto_stories',
       label: 'mainNav.tipitakaEdition',
       to: '/setting/configuration/tipitaka-edition',
+      class: 'text-black',
+      loggedIn: true,
+      userEmailVerified: true,
+      havePermission: 'configuration'
+    },
+    {
+      icon: 'account_tree',
+      label: 'mainNav.tocSet',
+      to: '/setting/configuration/toc-set',
       class: 'text-black',
       loggedIn: true,
       userEmailVerified: true,
@@ -148,6 +169,12 @@ const mutations = {
       return o.label
     })
     state.operationNavs = uniq
+  },
+  setCommonTocNavs (state, payload) {
+    const uniq = _.uniqBy([...state.commonTocNavs, ...payload], function (o) {
+      return o.label
+    })
+    state.commonTocNavs = uniq
   }
 }
 
@@ -161,13 +188,31 @@ const actions = {
             icon: 'remove',
             label: doc.data().name,
             caption: doc.data().description,
-            to: '/tipitaka/' + doc.data().code,
+            to: '/tipitaka/' + doc.id,
             loggedIn: true,
             userEmailVerified: true,
             havePermission: 'tipitaka'
           })
         })
         commit('setOperationNavs', menuItems)
+      })
+  },
+  createCommonTocNavs ({ commit }, payload) {
+    const menuItems = []
+    db.collection('tocSet').orderBy('sequence').get()
+      .then(querySnapshot => {
+        querySnapshot.forEach((doc) => {
+          menuItems.push({
+            icon: 'remove',
+            label: doc.data().name,
+            caption: doc.data().description,
+            to: '/common-toc/' + doc.id,
+            loggedIn: true,
+            userEmailVerified: true,
+            havePermission: 'tipitaka'
+          })
+        })
+        commit('setCommonTocNavs', menuItems)
       })
   }
 }

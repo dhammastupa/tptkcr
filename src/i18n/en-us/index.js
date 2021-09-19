@@ -11,6 +11,7 @@ export default {
     switchLang: 'เปลี่ยนภาษา',
     submit: 'Submit',
     close: 'Close',
+    saveAndClose: 'Save & Close',
     verified: 'Verified',
     createdOn: 'Created On',
     updatedOn: 'Updated On',
@@ -32,15 +33,19 @@ export default {
     saveRecord: 'Save',
     confirm: 'Confirm',
     cancel: 'Cancel',
-    note: 'Note'
+    note: 'Note',
+    filter: 'Filter',
+    confirmToDelete: 'Are you sure to delete this record.'
   },
   // message
   systemMessage: {
     infoTitle: '<span class="text-blue">Info</span>',
     errorTitle: '<span class="text-red">Error</span>',
     success: 'Success',
+    updateSuccess: 'update successful!',
     error: 'Error, Please contact Admin',
-    deleted: 'File deleted successfully'
+    deleted: 'File deleted successfully',
+    noRecordFound: 'No Record Found'
   },
   // ---------
   // store
@@ -113,7 +118,38 @@ export default {
     lineSpacing: 'Line Spacing',
     paddingTop: '1st Line',
     confirmToCreateWrodlist: 'Once the "word list" has been created, System will not allow to edit the original text.',
-    confirmToRemoveWrodlist: 'Delete all "word lists" created from this page.'
+    confirmToRemoveWrodlist: 'Delete all "word lists" created from this page.',
+    commonToc: 'Common Table of Content'
+  },
+  // commonToc
+  commonToc: {
+    label: 'Label',
+    upward: 'Upward',
+    downward: 'Downward',
+    delete: 'Delete',
+    update: 'Update',
+    add: 'Add',
+    expandAll: 'Collapse/Expand All',
+    settings: 'Settings',
+    volumes: 'Volumes',
+    chengeParent: 'Change Parent',
+    pageView: 'Page View',
+    treeView: 'TOC View',
+    beginContent: 'Begin Content',
+    endContent: 'End Content',
+    markContent: 'Mark Content',
+    clearMarkContent: 'Clear Mark Content',
+    clearSelectedWord: 'Clear Selected Word',
+    firstWord: 'First Word',
+    lastWord: 'Last Word',
+    wordSeqBlock: 'Word Sequence Block',
+    save: 'Save',
+    volumeNumber: 'Volume #',
+    pageNumber: 'Page #',
+    word: 'Word',
+    tcr: 'TCR',
+    verseNumber: 'Verse Number',
+    search: 'Search'
   },
   // configuration
   configuration: {
@@ -146,7 +182,12 @@ export default {
     mi1: 'Tool #1',
     mi2: 'Tool #2',
     mi3: 'Tool #3',
-    mi4: 'Tool #4'
+    mi4: 'Tool #4',
+    mi5: 'Tool #5',
+    mi6: 'Tool #6',
+    mi7: 'Tool #7',
+    mi8: 'Tool #8',
+    tocSet: 'Table of Contents Set'
   },
   // ---------
   // components
@@ -179,7 +220,10 @@ export default {
     configuration: 'Configuration',
     tipitakaEdition: 'Tipitaka Edition',
     tipitaka: 'Tipitaka',
+    tipitakaPreservation: 'Tipitaka Preservation',
+    commonToc: 'Common TOC',
     webContent: 'Web Content',
-    utility: 'Utility'
+    utility: 'Utility',
+    tocSet: 'Table of Contents Set'
   }
 }
